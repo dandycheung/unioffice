@@ -11,22 +11,22 @@
 
 // Package diskstore implements tempStorage interface
 // by using disk as a storage
-package diskstore ;import (_ad "github.com/unidoc/unioffice/v2/common/tempstorage";_c "io/ioutil";_af "os";_e "strings";);
-
-// Open opens file from disk according to a path
-func (_d diskStorage )Open (path string )(_ad .File ,error ){return _af .OpenFile (path ,_af .O_RDWR ,0644);};type diskStorage struct{};
-
-// TempFile creates a new temp file by calling ioutil TempFile
-func (_dc diskStorage )TempFile (dir ,pattern string )(_ad .File ,error ){return _c .TempFile (dir ,pattern );};
-
-// SetAsStorage sets temp storage as a disk storage
-func SetAsStorage (){_cf :=diskStorage {};_ad .SetAsStorage (&_cf )};
-
-// RemoveAll removes all files in the directory
-func (_ag diskStorage )RemoveAll (dir string )error {if _e .HasPrefix (dir ,_af .TempDir ()){return _af .RemoveAll (dir );};return nil ;};
+package diskstore ;import (_gg "github.com/unidoc/unioffice/v2/common/tempstorage";_d "io/ioutil";_a "os";_g "strings";);
 
 // Add is not applicable in the diskstore implementation
-func (_b diskStorage )Add (path string )error {return nil };
+func (_eb diskStorage )Add (path string )error {return nil };
+
+// RemoveAll removes all files in the directory
+func (_bd diskStorage )RemoveAll (dir string )error {if _g .HasPrefix (dir ,_a .TempDir ()){return _a .RemoveAll (dir );};return nil ;};
+
+// TempFile creates a new temp file by calling ioutil TempFile
+func (_b diskStorage )TempFile (dir ,pattern string )(_gg .File ,error ){return _d .TempFile (dir ,pattern );};type diskStorage struct{};
 
 // TempFile creates a new temp directory by calling ioutil TempDir
-func (_ab diskStorage )TempDir (pattern string )(string ,error ){return _c .TempDir ("",pattern )};
+func (_de diskStorage )TempDir (pattern string )(string ,error ){return _d .TempDir ("",pattern )};
+
+// Open opens file from disk according to a path
+func (_e diskStorage )Open (path string )(_gg .File ,error ){return _a .OpenFile (path ,_a .O_RDWR ,0644)};
+
+// SetAsStorage sets temp storage as a disk storage
+func SetAsStorage (){_f :=diskStorage {};_gg .SetAsStorage (&_f )};

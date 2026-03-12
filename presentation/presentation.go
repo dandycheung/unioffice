@@ -9,593 +9,592 @@
 // Use of this source code is governed by the UniDoc End User License Agreement
 // terms that can be accessed at https://unidoc.io/eula/
 
-package presentation ;import (_d "archive/zip";_df "bytes";_gbc "encoding/xml";_ggc "errors";_ed "fmt";_gd "github.com/unidoc/unioffice/v2";_ge "github.com/unidoc/unioffice/v2/common";_gg "github.com/unidoc/unioffice/v2/common/logger";_cc "github.com/unidoc/unioffice/v2/common/tempstorage";
-_fb "github.com/unidoc/unioffice/v2/drawing";_ae "github.com/unidoc/unioffice/v2/internal/formatutils";_e "github.com/unidoc/unioffice/v2/internal/license";_f "github.com/unidoc/unioffice/v2/measurement";_ee "github.com/unidoc/unioffice/v2/schema/soo/dml";
-_g "github.com/unidoc/unioffice/v2/schema/soo/dml/chart";_bb "github.com/unidoc/unioffice/v2/schema/soo/ofc/sharedTypes";_b "github.com/unidoc/unioffice/v2/schema/soo/pkg/relationships";_cf "github.com/unidoc/unioffice/v2/schema/soo/pml";_gb "github.com/unidoc/unioffice/v2/zippkg";
-_eb "image";_ef "image/jpeg";_ccf "io";_bf "math";_cd "os";_be "path";_ca "sort";_c "strconv";_ab "strings";);
+package presentation ;import (_bgf "archive/zip";_ff "bytes";_fbg "encoding/xml";_fc "errors";_ab "fmt";_cf "github.com/unidoc/unioffice/v2";_ad "github.com/unidoc/unioffice/v2/common";_ac "github.com/unidoc/unioffice/v2/common/logger";_db "github.com/unidoc/unioffice/v2/common/tempstorage";
+_cg "github.com/unidoc/unioffice/v2/drawing";_g "github.com/unidoc/unioffice/v2/internal/formatutils";_cc "github.com/unidoc/unioffice/v2/internal/license";_a "github.com/unidoc/unioffice/v2/measurement";_adb "github.com/unidoc/unioffice/v2/schema/soo/dml";
+_d "github.com/unidoc/unioffice/v2/schema/soo/dml/chart";_bg "github.com/unidoc/unioffice/v2/schema/soo/ofc/sharedTypes";_c "github.com/unidoc/unioffice/v2/schema/soo/pkg/relationships";_de "github.com/unidoc/unioffice/v2/schema/soo/pml";_ba "github.com/unidoc/unioffice/v2/zippkg";
+_bae "image";_dc "image/jpeg";_e "io";_af "math";_ga "os";_cd "path";_gd "sort";_b "strconv";_fb "strings";);
 
-// Properties returns the properties of the TextBox.
-func (_bgd Image )Properties ()_fb .ShapeProperties {if _bgd ._beg .SpPr ==nil {_bgd ._beg .SpPr =_ee .NewCT_ShapeProperties ();};return _fb .MakeShapeProperties (_bgd ._beg .SpPr );};
+// ExtLst returns the ExtLst property.
+func (_gff PresentationProperties )ExtLst ()*_de .CT_ExtensionList {return _gff ._dgg .ExtLst };var (SlideScreenSize16x9 =SlideScreenSize {12192000,6858000};SlideScreenSize4x3 =SlideScreenSize {9144000,6858000};SlideScreenSizeA4 =SlideScreenSize {9906000,6858000};
+);
 
-// Name returns the name of the slide layout.
-func (_dbbd SlideLayout )Name ()string {if _dbbd ._cdef .CSld !=nil &&_dbbd ._cdef .CSld .NameAttr !=nil {return *_dbbd ._cdef .CSld .NameAttr ;};return "";};
+// Presentation is the a presentation base document.
+type Presentation struct{_ad .DocBase ;_dcc *_de .Presentation ;_cbc _ad .Relationships ;_gdf []*_de .Sld ;_gda []_ad .Relationships ;_deae []int ;_bbf []*_de .SldMaster ;_cca []_ad .Relationships ;_bdd []int ;_bca []*_de .SldLayout ;_dgb []_ad .Relationships ;
+_cbd []*_adb .Theme ;_eca []_ad .Relationships ;_facg []int ;_facd _ad .TableStyles ;_cag PresentationProperties ;_gcce ViewProperties ;_gfb []*_adb .CT_Hyperlink ;_gdd []*chart ;_fcb []*_de .HandoutMaster ;_dbca []*_de .NotesMaster ;_eddd []int ;_gbe []*_cf .XSDAny ;
+_agbg []int ;_fdfb map[string ]string ;_fbdg string ;};
 
-// X returns TextBox's underlying *pml.CT_Shape.
-func (_cefc TextBox )X ()*_cf .CT_Shape {return _cefc ._bcfg };func (_fd *chart )RelId ()string {return _fd ._ba };func (_ccg *Presentation )nextSlideID ()uint32 {_feb :=uint32 (256);for _ ,_aeg :=range _ccg ._dgf .SldIdLst .SldId {if _aeg .IdAttr >=_feb {_feb =_aeg .IdAttr +1;
-};};return _feb ;};
+// SaveAsTemplate writes the presentation out to a writer in the Zip package format as a template
+func (_aea *Presentation )SaveAsTemplate (w _e .Writer )error {return _aea .save (w ,true )};
 
-// RemoveSlide removes a slide from a presentation.
-func (_dga *Presentation )RemoveSlide (s Slide )error {_afaa :=false ;_cbagg :=0;for _dff ,_gdd :=range _dga ._fde {if _gdd ==s ._gddb {if _dga ._dgf .SldIdLst .SldId [_dff ]!=s ._egde {return _ggc .New ("i\u006e\u0063\u006f\u006e\u0073\u0069s\u0074\u0065\u006e\u0063\u0079\u0020i\u006e\u0020\u0073\u006c\u0069\u0064\u0065s\u0020\u0061\u006e\u0064\u0020\u0049\u0044\u0020\u006c\u0069s\u0074");
-};copy (_dga ._fde [_dff :],_dga ._fde [_dff +1:]);_dga ._fde =_dga ._fde [0:len (_dga ._fde )-1];copy (_dga ._bafb [_dff :],_dga ._bafb [_dff +1:]);_dga ._bafb =_dga ._bafb [0:len (_dga ._bafb )-1];copy (_dga ._dgf .SldIdLst .SldId [_dff :],_dga ._dgf .SldIdLst .SldId [_dff +1:]);
-_dga ._dgf .SldIdLst .SldId =_dga ._dgf .SldIdLst .SldId [0:len (_dga ._dgf .SldIdLst .SldId )-1];copy (_dga ._ff [_dff :],_dga ._ff [_dff +1:]);_dga ._ff =_dga ._ff [0:len (_dga ._ff )-1];_afaa =true ;_cbagg =_dff ;};};if !_afaa {return _ggc .New ("u\u006ea\u0062\u006c\u0065\u0020\u0074\u006f\u0020\u0066i\u006e\u0064\u0020\u0073li\u0064\u0065");
-};_cef :=_gd .AbsoluteFilename (_gd .DocTypePresentation ,_gd .SlideType ,0);return _dga .ContentTypes .RemoveOverrideByIndex (_cef ,_cbagg );};func _gdg (_ea *Presentation ,_beb []*_cf .CT_GroupShapeChoice ,_cfd []rectangle ,_cdd []*TextItem )[]*TextItem {for _ ,_eg :=range _beb {_def :=append ([]rectangle {},_cfd ...);
-if _eg .Sp !=nil {_cdd =append (_cdd ,_bagc (_ea ,_eg .Sp ,nil ,nil ,_eg .Sp .SpPr .Xfrm ,0,_cfd ,_eg .Sp .TxBody .P )...);};if _eg .GraphicFrame !=nil &&_eg .GraphicFrame .Graphic !=nil &&_eg .GraphicFrame .Graphic .GraphicData !=nil {_bg :=_eg .GraphicFrame .Xfrm ;
-for _ ,_bd :=range _eg .GraphicFrame .Graphic .GraphicData .Any {if _gdb ,_fc :=_bd .(*_ee .Tbl );_fc {_cba :=&_gdb .CT_Table ;_fe :=0;for _eeg ,_afa :=range _gdb .Tr {for _gda ,_bc :=range _afa .Tc {_dea :=&TableInfo {Table :_cba ,Row :_afa ,Cell :_bc ,RowIndex :_eeg ,ColIndex :_gda };
-_cdd =append (_cdd ,_bagc (_ea ,nil ,_eg .GraphicFrame ,_dea ,_bg ,_fe ,_cfd ,_bc .TxBody .P )...);_fe ++;};};};};};if _eg .GrpSp !=nil {if _eg .GrpSp .GrpSpPr !=nil {_fa :=_eg .GrpSp .GrpSpPr .Xfrm ;var _bbg ,_ac int64 ;if _fa .Off !=nil {_bda ,_cff :=_fa .Off .XAttr .ST_CoordinateUnqualified ,_fa .Off .YAttr .ST_CoordinateUnqualified ;
-if _bda !=nil &&_cff !=nil {if _gcc :=_fa .Ext ;_gcc !=nil {_bbg ,_ac =_gcc .CxAttr ,_gcc .CyAttr ;};_def =append (_def ,rectangle {_cg :*_bda ,_bea :*_cff ,_de :*_bda +_bbg ,_eea :*_cff +_ac });};};};_cdd =_gdg (_ea ,_eg .GrpSp .GroupShapeChoice ,_def ,_cdd );
-};};return _cdd ;};
+// NewViewProperties constructs a new ViewProperties.
+func NewViewProperties ()ViewProperties {return ViewProperties {_bcb :_de .NewViewPr ()}};func (_eada TextBox )getOff ()*_adb .CT_Point2D {if _eada ._bbfd .SpPr ==nil {_eada ._bbfd .SpPr =_adb .NewCT_ShapeProperties ();};if _eada ._bbfd .SpPr .Xfrm ==nil {_eada ._bbfd .SpPr .Xfrm =_adb .NewCT_Transform2D ();
+};if _eada ._bbfd .SpPr .Xfrm .Off ==nil {_eada ._bbfd .SpPr .Xfrm .Off =_adb .NewCT_Point2D ();};return _eada ._bbfd .SpPr .Xfrm .Off ;};
 
-// GetLayoutImageByRelID returns an ImageRef with the associated relation ID in the
-// slide layout.
-func (_gafc *Slide )GetLayoutImageByRelID (relID string )(_ge .ImageRef ,bool ){_eed :=_gafc .getSlideLayoutRels ();if (_eed ==_ge .Relationships {}){return _ge .ImageRef {},false ;};_gfbf :=_eed .GetTargetByRelId (relID );for _ ,_ecg :=range _gafc ._cbab .Images {if _ecg .Target ()==_gfbf {return _ecg ,true ;
-};};return _ge .ImageRef {},false ;};func _ggg ()*Presentation {_fcgc :=&Presentation {_dgf :_cf .NewPresentation ()};_fcgc ._dgf .SldIdLst =_cf .NewCT_SlideIdList ();_fcgc ._dgf .ConformanceAttr =_bb .ST_ConformanceClassTransitional ;_fcgc .AppProperties =_ge .NewAppProperties ();
-_fcgc .CoreProperties =_ge .NewCoreProperties ();_fcgc ._ffe =_ge .NewTableStyles ();_fcgc .ContentTypes =_ge .NewContentTypes ();_fcgc .Rels =_ge .NewRelationships ();_fcgc ._cbb =_ge .NewRelationships ();_fcgc ._bcaf =NewPresentationProperties ();_fcgc ._eeae =NewViewProperties ();
-_fcgc ._dcc =map[string ]string {};return _fcgc ;};
-
-// GridSpacing returns the GridSpacing property.
-func (_fbcb ViewProperties )GridSpacing ()*_ee .CT_PositiveSize2D {return _fbcb ._dddf .GridSpacing };
-
-// SetOffsetY sets vertical offset of text box in distance units (see measurement package).
-func (_geff TextBox )SetOffsetY (offY float64 ){_gced :=_geff .getOff ();_ffdc :=_f .ToEMU (offY );_gced .YAttr =_ee .ST_Coordinate {ST_CoordinateUnqualified :&_ffdc };};
-
-// AddParagraph adds a paragraph to the text box
-func (_dgdb TextBox )AddParagraph ()_fb .Paragraph {_bdd :=_ee .NewCT_TextParagraph ();_dgdb ._bcfg .TxBody .P =append (_dgdb ._bcfg .TxBody .P ,_bdd );return _fb .MakeParagraph (_bdd );};
-
-// Remove removes a placeholder from a presentation.
-func (_gfe PlaceHolder )Remove ()error {for _efaf ,_fgg :=range _gfe ._abd .CSld .SpTree .GroupShapeChoice {if _fgg .Sp !=nil &&_fgg .Sp ==_gfe ._daa {copy (_gfe ._abd .CSld .SpTree .GroupShapeChoice [_efaf :],_gfe ._abd .CSld .SpTree .GroupShapeChoice [_efaf +1:]);
-_gfe ._abd .CSld .SpTree .GroupShapeChoice =_gfe ._abd .CSld .SpTree .GroupShapeChoice [0:len (_gfe ._abd .CSld .SpTree .GroupShapeChoice )-1];return nil ;};};return _ggc .New ("\u0070\u006c\u0061\u0063\u0065\u0068\u006f\u006c\u0064\u0065r\u0020\u006e\u006f\u0074\u0020\u0066\u006fu\u006e\u0064\u0020\u0069\u006e\u0020\u0073\u006c\u0069\u0064\u0065");
-};
-
-// PresentationProperties contains document specific properties.
-type PresentationProperties struct{_fefg *_cf .PresentationPr };
-
-// GetTableStyleById returns *dml.CT_TableStyle by its style id.
-func (_aeea *Presentation )GetTableStyleById (id string )*_ee .CT_TableStyle {_bebb :=_aeea ._ffe .TblStyle ();for _ ,_gbdc :=range _bebb {if _gbdc .StyleIdAttr ==id {return _gbdc ;};};return nil ;};func (_baf sort2d )Len ()int {return len (_baf )};
-
-// Tables returns all of the tables within a given slide.
-func (_gdaga Slide )Tables ()[]*_ge .Table {_fcad :=[]*_ge .Table {};_daeb :=_gdaga .X ().CSld ;if _ceda :=_daeb .SpTree ;_ceda !=nil {for _ ,_gcg :=range _ceda .GroupShapeChoice {if _gcg .GraphicFrame !=nil &&_gcg .GraphicFrame .Graphic !=nil &&_gcg .GraphicFrame .Graphic .GraphicData !=nil {for _ ,_fcbg :=range _gcg .GraphicFrame .Graphic .GraphicData .Any {if _adbe ,_fcdb :=_fcbg .(*_ee .Tbl );
-_fcdb {_dac :=_ge .NewTableFromTbl (_adbe ,_gcg .GraphicFrame .Xfrm );_fcad =append (_fcad ,_dac );};};};};};return _fcad ;};func (_bbe *Presentation )Validate ()error {if _ecb :=_bbe ._dgf .Validate ();_ecb !=nil {return _ecb ;};for _badc ,_faba :=range _bbe .Slides (){if _dcf :=_faba .ValidateWithPath (_ed .Sprintf ("\u0053l\u0069\u0064\u0065\u005b\u0025\u0064]",_badc ));
-_dcf !=nil {return _dcf ;};};for _dbefe ,_ddca :=range _bbe ._dfd {if _dfce :=_ddca .ValidateWithPath (_ed .Sprintf ("\u0053l\u0069d\u0065\u004d\u0061\u0073\u0074\u0065\u0072\u005b\u0025\u0064\u005d",_dbefe ));_dfce !=nil {return _dfce ;};};for _baef ,_bada :=range _bbe ._cbag {if _eege :=_bada .ValidateWithPath (_ed .Sprintf ("\u0053l\u0069d\u0065\u004c\u0061\u0079\u006f\u0075\u0074\u005b\u0025\u0064\u005d",_baef ));
-_eege !=nil {return _eege ;};};return nil ;};
-
-// PlaceHolder is a place holder from a slide.
-type PlaceHolder struct{_daa *_cf .CT_Shape ;_abd *_cf .Sld ;};
-
-// AddParagraph adds a new paragraph to a placeholder.
-func (_bae PlaceHolder )AddParagraph ()_fb .Paragraph {_bca :=_fb .MakeParagraph (_ee .NewCT_TextParagraph ());_bae ._daa .TxBody .P =append (_bae ._daa .TxBody .P ,_bca .X ());return _bca ;};
-
-// GetImageByTarget returns an ImageRef with the given target in the
-// document.
-func (_agdc *Presentation )GetImageByTarget (target string )(_ge .ImageRef ,bool ){for _ ,_dgaf :=range _agdc .Images {if _dgaf .Target ()==target {return _dgaf ,true ;};};return _ge .ImageRef {},false ;};
-
-// OutlineViewPr returns the OutlineViewPr property.
-func (_gegg ViewProperties )OutlineViewPr ()*_cf .CT_OutlineViewProperties {return _gegg ._dddf .OutlineViewPr ;};
-
-// SaveToFile writes the Presentation out to a file.
-func (_adcb *Presentation )SaveToFile (path string )error {return _adcb .saveToFile (path ,false )};
+// X returns the inner wrapped XML type.
+func (_cgda SlideMaster )X ()*_de .SldMaster {return _cgda ._cgea };
 
 // AddImage adds an image to the document package, returning a reference that
 // can be used to add the image to a run and place it in the document contents.
-func (_ecda *Presentation )AddImage (i _ge .Image )(_ge .ImageRef ,error ){_dfba :=_ge .MakeImageRef (i ,&_ecda .DocBase ,_ecda ._cbb );if i .Data ==nil &&i .Path ==""{return _dfba ,_ggc .New ("\u0069\u006d\u0061\u0067\u0065\u0020\u006d\u0075\u0073\u0074 \u0068\u0061\u0076\u0065\u0020\u0064\u0061t\u0061\u0020\u006f\u0072\u0020\u0061\u0020\u0070\u0061\u0074\u0068");
-};if i .Format ==""{return _dfba ,_ggc .New ("\u0069\u006d\u0061\u0067\u0065\u0020\u006d\u0075\u0073\u0074 \u0068\u0061\u0076\u0065\u0020\u0061\u0020v\u0061\u006c\u0069\u0064\u0020\u0066\u006f\u0072\u006d\u0061\u0074");};if i .Size .X ==0||i .Size .Y ==0{return _dfba ,_ggc .New ("\u0069\u006d\u0061\u0067e\u0020\u006d\u0075\u0073\u0074\u0020\u0068\u0061\u0076\u0065 \u0061 \u0076\u0061\u006c\u0069\u0064\u0020\u0073i\u007a\u0065");
-};if i .Path !=""{_cfac :=_cc .Add (i .Path );if _cfac !=nil {return _dfba ,_cfac ;};};_ecda .Images =append (_ecda .Images ,_dfba );_ecda .ContentTypes .EnsureDefault ("\u0070\u006e\u0067","\u0069m\u0061\u0067\u0065\u002f\u0070\u006eg");_ecda .ContentTypes .EnsureDefault ("\u006a\u0070\u0065\u0067","\u0069\u006d\u0061\u0067\u0065\u002f\u006a\u0070\u0065\u0067");
-_ecda .ContentTypes .EnsureDefault ("\u006a\u0070\u0067","\u0069\u006d\u0061\u0067\u0065\u002f\u006a\u0070\u0065\u0067");_ecda .ContentTypes .EnsureDefault ("\u0077\u006d\u0066","i\u006d\u0061\u0067\u0065\u002f\u0078\u002d\u0077\u006d\u0066");_ecda .ContentTypes .EnsureDefault (i .Format ,"\u0069\u006d\u0061\u0067\u0065\u002f"+i .Format );
-return _dfba ,nil ;};
+func (_edbd *Presentation )AddImage (i _ad .Image )(_ad .ImageRef ,error ){_cac :=_ad .MakeImageRef (i ,&_edbd .DocBase ,_edbd ._cbc );if i .Data ==nil &&i .Path ==""{return _cac ,_fc .New ("\u0069\u006d\u0061\u0067\u0065\u0020\u006d\u0075\u0073\u0074 \u0068\u0061\u0076\u0065\u0020\u0064\u0061t\u0061\u0020\u006f\u0072\u0020\u0061\u0020\u0070\u0061\u0074\u0068");
+};if i .Format ==""{return _cac ,_fc .New ("\u0069\u006d\u0061\u0067\u0065\u0020\u006d\u0075\u0073\u0074 \u0068\u0061\u0076\u0065\u0020\u0061\u0020v\u0061\u006c\u0069\u0064\u0020\u0066\u006f\u0072\u006d\u0061\u0074");};if i .Size .X ==0||i .Size .Y ==0{return _cac ,_fc .New ("\u0069\u006d\u0061\u0067e\u0020\u006d\u0075\u0073\u0074\u0020\u0068\u0061\u0076\u0065 \u0061 \u0076\u0061\u006c\u0069\u0064\u0020\u0073i\u007a\u0065");
+};if i .Path !=""{_adbf :=_db .Add (i .Path );if _adbf !=nil {return _cac ,_adbf ;};};_edbd .Images =append (_edbd .Images ,_cac );_edbd .ContentTypes .EnsureDefault ("\u0070\u006e\u0067","\u0069m\u0061\u0067\u0065\u002f\u0070\u006eg");_edbd .ContentTypes .EnsureDefault ("\u006a\u0070\u0065\u0067","\u0069\u006d\u0061\u0067\u0065\u002f\u006a\u0070\u0065\u0067");
+_edbd .ContentTypes .EnsureDefault ("\u006a\u0070\u0067","\u0069\u006d\u0061\u0067\u0065\u002f\u006a\u0070\u0065\u0067");_edbd .ContentTypes .EnsureDefault ("\u0077\u006d\u0066","i\u006d\u0061\u0067\u0065\u002f\u0078\u002d\u0077\u006d\u0066");_edbd .ContentTypes .EnsureDefault (i .Format ,"\u0069\u006d\u0061\u0067\u0065\u002f"+i .Format );
+return _cac ,nil ;};func (_ggga *Slide )getSlideLayoutRels ()_ad .Relationships {_ffee :=_ggga ._bbgag ;for _bfef ,_fcff :=range _ffee .SlideLayouts (){if *_ggga .GetSlideLayout ().CSld ==*_fcff ._gcee .CSld {return _ffee ._dgb [_bfef ];};};return _ad .Relationships {};
+};
 
-// SlideViewPr returns the SlideViewPr property.
-func (_ccdd ViewProperties )SlideViewPr ()*_cf .CT_SlideViewProperties {return _ccdd ._dddf .SlideViewPr };
+// X returns the inner wrapped XML type.
+func (_aef PlaceHolder )X ()*_de .CT_Shape {return _aef ._abf };
+
+// Tables returns all of the tables within a given slide.
+func (_gec Slide )Tables ()[]*_ad .Table {_edfeb :=[]*_ad .Table {};_ccac :=_gec .X ().CSld ;if _fcfda :=_ccac .SpTree ;_fcfda !=nil {for _ ,_gefc :=range _fcfda .GroupShapeChoice {if _gefc .GraphicFrame !=nil &&_gefc .GraphicFrame .Graphic !=nil &&_gefc .GraphicFrame .Graphic .GraphicData !=nil {for _ ,_gce :=range _gefc .GraphicFrame .Graphic .GraphicData .Any {if _bagf ,_fgad :=_gce .(*_adb .Tbl );
+_fgad {_ecbc :=_ad .NewTableFromTbl (_bagf ,_gefc .GraphicFrame .Xfrm );_edfeb =append (_edfeb ,_ecbc );};};};};};return _edfeb ;};
+
+// CopySlide copies existing slide from another presentation and inserts it as a last one.
+func (_bfee *Presentation )CopySlide (s Slide )(Slide ,error ){_fdb :=_de .NewCT_SlideIdListEntry ();_fdb .IdAttr =_bfee .nextSlideID ();_bfee ._dcc .SldIdLst .SldId =append (_bfee ._dcc .SldIdLst .SldId ,_fdb );_bfa :=s .GetSlideLayout ();_cgba :=true ;
+for _ ,_egd :=range _bfee ._bca {if _egd ==_bfa {_cgba =false ;break ;};};if _cgba {if _ecab :=_bfee .addLayoutFromSlide (s );_ecab !=nil {return Slide {},_ecab ;};};_bfee ._gdf =append (_bfee ._gdf ,s ._deeg );_bfee ._deae =append (_bfee ._deae ,len (_bfee ._gdf ));
+_ega :=_bfee ._cbc .AddAutoRelationship (_cf .DocTypePresentation ,_cf .OfficeDocumentType ,len (_bfee ._gdf ),_cf .SlideType );_fdb .RIdAttr =_ega .ID ();_daec :=_cf .AbsoluteFilename (_cf .DocTypePresentation ,_cf .SlideType ,len (_bfee ._gdf ));_bfee .ContentTypes .AddOverride (_daec ,_cf .SlideContentType );
+_eef :=_ad .NewRelationships ();_bfee ._gda =append (_bfee ._gda ,_eef );_aec :=len (_bfee ._gda )-1;for _bgbe ,_dfd :=range _bfee ._bca {if _dfd ==_bfa {_ecb :=_bfee ._dgb [_bgbe ];for _ ,_caf :=range _ecb .X ().Relationship {if _caf .TypeAttr !=_cf .SlideMasterType {_bfee ._gda [_aec ].X ().Relationship =append (_bfee ._gda [_aec ].X ().Relationship ,_caf );
+};};_eef .AddAutoRelationship (_cf .DocTypePresentation ,_cf .SlideType ,_bgbe +1,_cf .SlideLayoutType );};};_gfbe :=Slide {_fdb ,s ._deeg ,_bfee ,nil };return _gfbe ,nil ;};func (_fg *chart )RelId ()string {return _fg ._fbc };
+
+// ValidateWithPath validates the slide passing path informaton for a better
+// error message.
+func (_bgcc Slide )ValidateWithPath (path string )error {if _ecgb :=_bgcc ._deeg .ValidateWithPath (path );_ecgb !=nil {return _ecgb ;};for _ ,_fddb :=range _bgcc ._deeg .CSld .SpTree .GroupShapeChoice {if _fddb .Sp !=nil &&_fddb .Sp .TxBody !=nil {if len (_fddb .Sp .TxBody .P )==0{return _fc .New (path +"\u0020\u003a \u0073\u006c\u0069\u0064\u0065 \u0073\u0068\u0061\u0070\u0065 \u0077\u0069\u0074\u0068\u0020\u0061\u0020\u0074\u0078\u0062\u006f\u0064\u0079\u0020\u006d\u0075\u0073\u0074\u0020\u0063\u006f\u006e\u0074\u0061\u0069\u006e\u0020\u0070\u0061\u0072\u0061\u0067\u0072\u0061\u0070\u0068\u0073");
+};};};return nil ;};
+
+// Less is for implementing sorting of two locations. Symbols share the same location if they are in the same paragraph or table. One location is 'less' than another first by y coordinate, if y coordinates are equal or differ by less than yEpsilon, then x coordinates are compared, then if they are also equal, indexes of locations in the table are compared, then positions of locations in a paragraph.
+func (_bff sort2d )Less (i ,j int )bool {_bafa ,_ag :=_bff [i ],_bff [j ];_bgfa ,_cdc :=_bafa ._bc ,_ag ._bc ;_ffa ,_beb :=len (_bgfa )-1,len (_cdc )-1;_daf ,_fdg :=0,0;for {_dac ,_fdf ,_ecfd ,_dafa ,_agb ,_ecff ,_ebae ,_gge :=_bgfa [_daf ]._dcb ,_cdc [_fdg ]._dcb ,_bgfa [_daf ]._fbcf ,_cdc [_fdg ]._fbcf ,_bgfa [_daf ]._ed ,_cdc [_fdg ]._ed ,_bgfa [_daf ]._fe ,_cdc [_fdg ]._fe ;
+if _dac ==_fdf ||((_af .Abs (float64 (_dac )-float64 (_fdf ))< _ead )&&((_dac >=_fdf &&_dac <=_dafa )||(_fdf >=_dac &&_fdf <=_ecfd ))&&(_ebae < _ecff ||_agb > _gge )){if _agb ==_ecff {if _daf < _ffa &&_fdg < _beb {_daf ++;_fdg ++;continue ;};if _daf >=_ffa &&_fdg >=_beb {break ;
+};return _daf >=_ffa ;}else {return _agb < _ecff ;};}else {return _dac < _fdf ;};};_ccb ,_bab ,_egc ,_edb :=_bafa ._bgfb ,_ag ._bgfb ,_bafa ._fcg ,_ag ._fcg ;if _ccb ==_bab {return _egc <=_edb ;};return _ccb < _bab ;};
+
+// Slides returns the slides in the presentation.
+func (_dag *Presentation )Slides ()[]Slide {_gfa :=[]Slide {};for _bdfd ,_dcfc :=range _dag ._gdf {_gfa =append (_gfa ,Slide {_dag ._dcc .SldIdLst .SldId [_bdfd ],_dcfc ,_dag ,nil });};return _gfa ;};
+
+// SlideSize represents a slide size of a presentation.
+type SlideSize struct{_bdb *_de .CT_SlideSize ;_cedb *Presentation ;};
+
+// Properties returns the properties of the TextBox.
+func (_adeg TextBox )Properties ()_cg .ShapeProperties {if _adeg ._bbfd .SpPr ==nil {_adeg ._bbfd .SpPr =_adb .NewCT_ShapeProperties ();};return _cg .MakeShapeProperties (_adeg ._bbfd .SpPr );};
+
+// GridSpacing returns the GridSpacing property.
+func (_fbabf ViewProperties )GridSpacing ()*_adb .CT_PositiveSize2D {return _fbabf ._bcb .GridSpacing };
+
+// Sid returns the sid of slide
+func (_babe Slide )Sid ()*_de .CT_SlideIdListEntry {return _babe ._bea };
+
+// GetTableStyleById returns *dml.CT_TableStyle by its style id.
+func (_dabd *Presentation )GetTableStyleById (id string )*_adb .CT_TableStyle {_cbbg :=_dabd ._facd .TblStyle ();for _ ,_afae :=range _cbbg {if _afae .StyleIdAttr ==id {return _afae ;};};return nil ;};
+
+// TableInfo is used for keep information about a table, a row and a cell where the text is located.
+type TableInfo struct{Table *_adb .CT_Table ;Row *_adb .CT_TableRow ;Cell *_adb .CT_TableCell ;RowIndex int ;ColIndex int ;};
+
+// Clear clears the placeholder contents and adds a single empty paragraph.  The
+// empty paragrah is required by PowerPoint or it will report the file as being
+// invalid.
+func (_cfb PlaceHolder )Clear (){_cfb .ClearAll ();_gccc :=_adb .NewCT_TextParagraph ();_cfb ._abf .TxBody .P =[]*_adb .CT_TextParagraph {_gccc };_gccc .EndParaRPr =_adb .NewCT_TextCharacterProperties ();_gccc .EndParaRPr .LangAttr =_cf .String ("\u0065\u006e\u002dU\u0053");
+};
+
+// AddSlideWithLayout adds a new slide with content copied from a layout.  Normally you should
+// use AddDefaultSlideWithLayout as it will do some post processing similar to PowerPoint to
+// clear place holder text, etc.
+func (_eaf *Presentation )AddSlideWithLayout (l SlideLayout )(Slide ,error ){_dfc :=_de .NewCT_SlideIdListEntry ();_dfc .IdAttr =_eaf .nextSlideID ();_eaf ._dcc .SldIdLst .SldId =append (_eaf ._dcc .SldIdLst .SldId ,_dfc );_eagf :=_de .NewSld ();_egg :=_ff .Buffer {};
+_fdaa :=_fbg .NewEncoder (&_egg );_gccb :=_fbg .StartElement {Name :_fbg .Name {Local :"\u0073\u006c\u0069d\u0065"}};_gccb .Attr =append (_gccb .Attr ,_fbg .Attr {Name :_fbg .Name {Local :"\u0078\u006d\u006cn\u0073"},Value :"\u0068\u0074\u0074\u0070\u003a\u002f\u002f\u0073\u0063\u0068\u0065\u006d\u0061\u0073\u002e\u006f\u0070\u0065\u006e\u0078m\u006c\u0066\u006f\u0072\u006d\u0061\u0074\u0073\u002eo\u0072\u0067\u002f\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061\u0074\u0069o\u006e\u006d\u006c\u002f\u0032\u00300\u0036\u002f\u006da\u0069\u006e"});
+_gccb .Attr =append (_gccb .Attr ,_fbg .Attr {Name :_fbg .Name {Local :"\u0078m\u006c\u006e\u0073\u003a\u0061"},Value :"\u0068\u0074\u0074\u0070\u003a\u002f\u002f\u0073\u0063\u0068\u0065m\u0061\u0073\u002e\u006f\u0070\u0065\u006e\u0078m\u006cf\u006f\u0072\u006d\u0061\u0074\u0073\u002e\u006f\u0072\u0067\u002f\u0064\u0072\u0061\u0077\u0069\u006e\u0067m\u006c\u002f\u0032\u0030\u0030\u0036\u002f\u006d\u0061\u0069\u006e"});
+_gccb .Attr =append (_gccb .Attr ,_fbg .Attr {Name :_fbg .Name {Local :"\u0078m\u006c\u006e\u0073\u003a\u0070"},Value :"\u0068\u0074\u0074\u0070\u003a\u002f\u002f\u0073\u0063\u0068\u0065\u006d\u0061\u0073\u002e\u006f\u0070\u0065\u006e\u0078m\u006c\u0066\u006f\u0072\u006d\u0061\u0074\u0073\u002eo\u0072\u0067\u002f\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061\u0074\u0069o\u006e\u006d\u006c\u002f\u0032\u00300\u0036\u002f\u006da\u0069\u006e"});
+_gccb .Attr =append (_gccb .Attr ,_fbg .Attr {Name :_fbg .Name {Local :"\u0078m\u006c\u006e\u0073\u003a\u0072"},Value :"\u0068\u0074\u0074\u0070\u003a\u002f/\u0073\u0063\u0068\u0065\u006da\u0073\u002e\u006f\u0070\u0065\u006ex\u006d\u006c\u0066\u006f\u0072m\u0061\u0074\u0073\u002e\u006f\u0072\u0067\u002f\u006f\u0066\u0066\u0069c\u0065\u0044\u006f\u0063\u0075\u006d\u0065\u006e\u0074\u002f\u0032\u0030\u0030\u0036\u002fr\u0065\u006c\u0061\u0074\u0069\u006f\u006e\u0073h\u0069\u0070\u0073"});
+_gccb .Attr =append (_gccb .Attr ,_fbg .Attr {Name :_fbg .Name {Local :"\u0078\u006d\u006c\u006e\u0073\u003a\u0073\u0068"},Value :"\u0068\u0074\u0074\u0070\u003a/\u002f\u0073\u0063\u0068\u0065m\u0061s\u002e\u006f\u0070\u0065\u006e\u0078\u006d\u006c\u0066\u006f\u0072\u006d\u0061\u0074\u0073\u002e\u006f\u0072\u0067/\u006f\u0066\u0066\u0069\u0063\u0065\u0044\u006f\u0063\u0075\u006d\u0065\u006e\u0074\u002f\u0032\u0030\u0030\u0036\u002f\u0073\u0068\u0061\u0072e\u0064\u0054\u0079\u0070\u0065\u0073"});
+_gccb .Attr =append (_gccb .Attr ,_fbg .Attr {Name :_fbg .Name {Local :"\u0078m\u006c\u006e\u0073\u003a\u0078\u006dl"},Value :"\u0068\u0074tp\u003a\u002f\u002fw\u0077\u0077\u002e\u00773.o\u0072g/\u0058\u004d\u004c\u002f\u0031\u0039\u00398/\u006e\u0061\u006d\u0065\u0073\u0070\u0061c\u0065"});
+if _dfcb :=l ._gcee .CSld .MarshalXML (_fdaa ,_gccb );_dfcb !=nil {return Slide {},_dfcb ;};if _fdef :=_fdaa .Flush ();_fdef !=nil {return Slide {},_fdef ;};_dcf :=_fbg .NewDecoder (&_egg );_eagf .CSld =_de .NewCT_CommonSlideData ();if _bbg :=_dcf .Decode (_eagf .CSld );
+_bbg !=nil {return Slide {},_bbg ;};_eagf .CSld .NameAttr =nil ;_eagf .CSld .SpTree .GroupShapeChoice =_fbf (_eagf .CSld .SpTree .GroupShapeChoice );_gcga :=make ([]*_de .CT_GroupShapeChoice ,0);for _ ,_bba :=range _eagf .CSld .SpTree .GroupShapeChoice {if _caeb :=_bba .Sp ;
+_caeb !=nil {if _eea :=_caeb .NvSpPr ;_eea !=nil {if _ada :=_eea .NvPr ;_ada !=nil {if _cefd :=_ada .Ph ;_cefd !=nil {_gcga =append (_gcga ,_bba );};};};};};_eagf .CSld .SpTree .GroupShapeChoice =_gcga ;_eaf ._gdf =append (_eaf ._gdf ,_eagf );_eaf ._deae =append (_eaf ._deae ,len (_eaf ._gdf ));
+_fdgf :=_eaf ._cbc .AddAutoRelationship (_cf .DocTypePresentation ,_cf .OfficeDocumentType ,len (_eaf ._gdf ),_cf .SlideType );_dfc .RIdAttr =_fdgf .ID ();_gddc :=_cf .AbsoluteFilename (_cf .DocTypePresentation ,_cf .SlideType ,len (_eaf ._gdf ));_eaf .ContentTypes .AddOverride (_gddc ,_cf .SlideContentType );
+_adg :=_ad .NewRelationships ();_eaf ._gda =append (_eaf ._gda ,_adg );_bag :=len (_eaf ._gda )-1;for _ffbf ,_fbae :=range _eaf ._bca {if _fbae ==l .X (){_dbe :=_eaf ._dgb [_ffbf ];for _ ,_edbf :=range _dbe .X ().Relationship {if _edbf .TypeAttr !=_cf .SlideMasterType {_eaf ._gda [_bag ].X ().Relationship =append (_eaf ._gda [_bag ].X ().Relationship ,_edbf );
+};};_adg .AddAutoRelationship (_cf .DocTypePresentation ,_cf .SlideType ,_ffbf +1,_cf .SlideLayoutType );};};_bfcg :=Slide {_dfc ,_eagf ,_eaf ,nil };return _bfcg ,nil ;};
+
+// GetImageByTarget returns an ImageRef with the given target in the
+// document.
+func (_accg *Presentation )GetImageByTarget (target string )(_ad .ImageRef ,bool ){for _ ,_cdcg :=range _accg .Images {if _cdcg .Target ()==target {return _cdcg ,true ;};};return _ad .ImageRef {},false ;};
+
+// SlideMaster is the slide master for a presentation.
+type SlideMaster struct{_cab *Presentation ;_efba _ad .Relationships ;_cgea *_de .SldMaster ;};func (_eb *chart )Target ()string {return _eb ._gdb };func _fd (_edg *Presentation ,_cb []*_de .CT_GroupShapeChoice ,_bf []rectangle ,_ae []*TextItem )[]*TextItem {for _ ,_fbb :=range _cb {_fef :=append ([]rectangle {},_bf ...);
+if _fbb .Sp !=nil {_ae =append (_ae ,_dea (_edg ,_fbb .Sp ,nil ,nil ,_fbb .Sp .SpPr .Xfrm ,0,_bf ,_fbb .Sp .TxBody .P )...);};if _fbb .GraphicFrame !=nil &&_fbb .GraphicFrame .Graphic !=nil &&_fbb .GraphicFrame .Graphic .GraphicData !=nil {_dbc :=_fbb .GraphicFrame .Xfrm ;
+for _ ,_adbe :=range _fbb .GraphicFrame .Graphic .GraphicData .Any {if _aeb ,_gb :=_adbe .(*_adb .Tbl );_gb {_df :=&_aeb .CT_Table ;_bd :=0;for _fda ,_cge :=range _aeb .Tr {for _gf ,_ec :=range _cge .Tc {_fa :=&TableInfo {Table :_df ,Row :_cge ,Cell :_ec ,RowIndex :_fda ,ColIndex :_gf };
+_ae =append (_ae ,_dea (_edg ,nil ,_fbb .GraphicFrame ,_fa ,_dbc ,_bd ,_bf ,_ec .TxBody .P )...);_bd ++;};};};};};if _fbb .GrpSp !=nil {if _fbb .GrpSp .GrpSpPr !=nil {_aff :=_fbb .GrpSp .GrpSpPr .Xfrm ;var _be ,_acc int64 ;if _aff .Off !=nil {_ffb ,_aa :=_aff .Off .XAttr .ST_CoordinateUnqualified ,_aff .Off .YAttr .ST_CoordinateUnqualified ;
+if _ffb !=nil &&_aa !=nil {if _edgc :=_aff .Ext ;_edgc !=nil {_be ,_acc =_edgc .CxAttr ,_edgc .CyAttr ;};_fef =append (_fef ,rectangle {_ed :*_ffb ,_dcb :*_aa ,_fe :*_ffb +_be ,_fbcf :*_aa +_acc });};};};_ae =_fd (_edg ,_fbb .GrpSp .GroupShapeChoice ,_fef ,_ae );
+};};return _ae ;};
+
+// Presentation returns a slide's presentation.
+func (_efa Slide )Presentation ()*Presentation {return _efa ._bbgag };func _dea (_aag *Presentation ,_ace *_de .CT_Shape ,_edf *_de .CT_GraphicalObjectFrame ,_fba *TableInfo ,_bce *_adb .CT_Transform2D ,_fgg int ,_afg []rectangle ,_cae []*_adb .CT_TextParagraph )[]*TextItem {_cda :=[]*TextItem {};
+var _fbga ,_ebe ,_gc ,_cgb ,_dbg ,_ece int64 ;_da :=_bce ==nil ;_fac :=0;for _ ,_fbbc :=range _cae {for _ ,_fead :=range _fbbc .EG_TextRun {if _bec :=_fead .TextRunChoice .R ;_bec !=nil {if !_da {if _bce .Off !=nil {if _gg :=_bce .Ext ;_gg !=nil {_dbg ,_ece =_gg .CxAttr ,_gg .CyAttr ;
+};if _dg :=_bce .Off .XAttr .ST_CoordinateUnqualified ;_dg !=nil {_fbga =*_dg ;_ebe =_fbga +_dbg ;_da =true ;};if _dgd :=_bce .Off .YAttr .ST_CoordinateUnqualified ;_dgd !=nil {_gc =*_dgd ;_cgb =_gc +_ece ;_da =true ;};};};_eba :=append ([]rectangle {},_afg ...);
+_eba =append (_eba ,rectangle {_ed :_fbga ,_fe :_ebe ,_dcb :_gc ,_fbcf :_cgb });_cda =append (_cda ,&TextItem {Presentation :_aag ,Shape :_ace ,GraphicFrame :_edf ,TableInfo :_fba ,Paragraph :_fbbc ,Run :_bec ,Text :_bec .T ,_bc :_eba ,_bgfb :_fgg ,_fcg :_fac });
+_fac ++;};};};return _cda ;};
+
+// X returns the inner wrapped XML type.
+func (_gaaa Slide )X ()*_de .Sld {return _gaaa ._deeg };func (_ca *chart )X ()*_d .ChartSpace {return _ca ._dd };
 
 // GetPlaceholderByIndex returns a placeholder given its index.  If there are multiplace
 // placeholders of the same index, this method returns the first one.  You must use the
 // PlaceHolders() method to access the others.
-func (_bbbf Slide )GetPlaceholderByIndex (idx uint32 )(PlaceHolder ,error ){for _ ,_degb :=range _bbbf ._gddb .CSld .SpTree .GroupShapeChoice {if _degb .Sp !=nil &&_degb .Sp .NvSpPr !=nil &&_degb .Sp .NvSpPr .NvPr !=nil &&_degb .Sp .NvSpPr .NvPr .Ph !=nil {if (idx ==0&&_degb .Sp .NvSpPr .NvPr .Ph .IdxAttr ==nil )||(_degb .Sp .NvSpPr .NvPr .Ph .IdxAttr !=nil &&*_degb .Sp .NvSpPr .NvPr .Ph .IdxAttr ==idx ){return PlaceHolder {_degb .Sp ,_bbbf ._gddb },nil ;
-};};};return PlaceHolder {},_ggc .New ("\u0075\u006e\u0061\u0062\u006c\u0065\u0020\u0074\u006f\u0020\u0066i\u006e\u0064\u0020\u0070\u006c\u0061\u0063\u0065\u0068\u006fl\u0064\u0065\u0072");};
+func (_begb Slide )GetPlaceholderByIndex (idx uint32 )(PlaceHolder ,error ){for _ ,_cddg :=range _begb ._deeg .CSld .SpTree .GroupShapeChoice {if _cddg .Sp !=nil &&_cddg .Sp .NvSpPr !=nil &&_cddg .Sp .NvSpPr .NvPr !=nil &&_cddg .Sp .NvSpPr .NvPr .Ph !=nil {if (idx ==0&&_cddg .Sp .NvSpPr .NvPr .Ph .IdxAttr ==nil )||(_cddg .Sp .NvSpPr .NvPr .Ph .IdxAttr !=nil &&*_cddg .Sp .NvSpPr .NvPr .Ph .IdxAttr ==idx ){return PlaceHolder {_cddg .Sp ,_begb ._deeg },nil ;
+};};};return PlaceHolder {},_fc .New ("\u0075\u006e\u0061\u0062\u006c\u0065\u0020\u0074\u006f\u0020\u0066i\u006e\u0064\u0020\u0070\u006c\u0061\u0063\u0065\u0068\u006fl\u0064\u0065\u0072");};
 
-// Save writes the presentation out to a writer in the Zip package format
-func (_fae *Presentation )Save (w _ccf .Writer )error {return _fae .save (w ,false )};var _geg =false ;
+// SaveToFileAsTemplate writes the Presentation out to a file as a template.
+func (_cbag *Presentation )SaveToFileAsTemplate (path string )error {return _cbag .saveToFile (path ,true );};
 
-// NotesViewPr returns the NotesViewPr property.
-func (_acdc ViewProperties )NotesViewPr ()*_cf .CT_NotesViewProperties {return _acdc ._dddf .NotesViewPr };
+// PresentationProperties contains document specific properties.
+type PresentationProperties struct{_dgg *_de .PresentationPr };func (_dfe *Presentation )save (_bbc _e .Writer ,_fbfc bool )error {const _ecde ="\u0050\u0072\u0065\u0073en\u0074\u0061\u0074\u0069\u006f\u006e\u003a\u0070\u002e\u0053\u0061\u0076\u0065";if _efg :=_dfe ._dcc .Validate ();
+_efg !=nil {_ac .Log .Debug ("\u0076\u0061\u006c\u0069\u0064\u0061\u0074\u0069\u006f\u006e\u0020\u0065\u0072\u0072\u006fr\u0020i\u006e\u0020\u0064\u006f\u0063\u0075\u006d\u0065\u006e\u0074\u003a\u0020\u0025\u0073",_efg );};if !_cc .GetLicenseKey ().IsLicensed ()&&!_ffe {_ab .Println ("\u0055\u006e\u006ci\u0063\u0065\u006e\u0073e\u0064\u0020\u0076\u0065\u0072\u0073\u0069o\u006e\u0020\u006f\u0066\u0020\u0055\u006e\u0069\u004f\u0066\u0066\u0069\u0063\u0065");
+_ab .Println ("\u002d\u0020\u0047e\u0074\u0020\u0061\u0020\u0074\u0072\u0069\u0061\u006c\u0020\u006c\u0069\u0063\u0065\u006e\u0073\u0065\u0020\u006f\u006e\u0020\u0068\u0074\u0074\u0070\u0073\u003a\u002f\u002fu\u006e\u0069\u0064\u006f\u0063\u002e\u0069\u006f");
+return _fc .New ("\u0075\u006e\u0069\u006f\u0066\u0066\u0069\u0063\u0065\u0020\u006ci\u0063\u0065\u006e\u0073\u0065\u0020\u0072\u0065\u0071\u0075i\u0072\u0065\u0064");};_dceg :="\u0075n\u006b\u006e\u006f\u0077\u006e";if _deee ,_eecg :=_bbc .(*_ga .File );
+_eecg {_dceg =_deee .Name ();};if len (_dfe ._fbdg )==0{_fabb ,_bgff :=_cc .GenRefId ("\u0070\u0077");if _bgff !=nil {_ac .Log .Error ("\u0045R\u0052\u004f\u0052\u003a\u0020\u0025v",_bgff );return _bgff ;};_dfe ._fbdg =_fabb ;};if _fcfe :=_cc .Track (_dfe ._fbdg ,_ecde ,_dceg );
+_fcfe !=nil {_ac .Log .Error ("\u0045R\u0052\u004f\u0052\u003a\u0020\u0025v",_fcfe );return _fcfe ;};if _fbfc {_dfe .ContentTypes .RemoveOverride ("\u0061\u0070\u0070\u006c\u0069\u0063\u0061t\u0069\u006f\u006e\u002f\u0076\u006e\u0064\u002e\u006f\u0070\u0065\u006e\u0078\u006d\u006c\u0066\u006f\u0072m\u0061\u0074\u0073\u002d\u006ff\u0066\u0069\u0063\u0065\u0064\u006f\u0063\u0075\u006de\u006e\u0074\u002e\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061\u0074\u0069\u006f\u006e\u006d\u006c\u002e\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061\u0074\u0069\u006f\u006e\u002e\u006d\u0061\u0069\u006e\u002b\u0078\u006d\u006c");
+_dfe .ContentTypes .EnsureOverride ("/\u0070\u0070\u0074\u002fpr\u0065s\u0065\u006e\u0074\u0061\u0074i\u006f\u006e\u002e\u0078\u006d\u006c","\u0061\u0070pl\u0069\u0063\u0061\u0074\u0069\u006f\u006e\u002f\u0076\u006e\u0064\u002e\u006f\u0070\u0065\u006e\u0078\u006d\u006c\u0066o\u0072\u006d\u0061\u0074s\u002d\u006f\u0066\u0066ic\u0065\u0064o\u0063u\u006d\u0065\u006e\u0074\u002e\u0070r\u0065\u0073\u0065n\u0074\u0061t\u0069\u006f\u006e\u006d\u006c\u002e\u0074\u0065\u006d\u0070\u006c\u0061\u0074\u0065.\u006d\u0061\u0069\u006e\u002b\u0078\u006d\u006c");
+}else {_dfe .ContentTypes .RemoveOverride ("\u0061\u0070pl\u0069\u0063\u0061\u0074\u0069\u006f\u006e\u002f\u0076\u006e\u0064\u002e\u006f\u0070\u0065\u006e\u0078\u006d\u006c\u0066o\u0072\u006d\u0061\u0074s\u002d\u006f\u0066\u0066ic\u0065\u0064o\u0063u\u006d\u0065\u006e\u0074\u002e\u0070r\u0065\u0073\u0065n\u0074\u0061t\u0069\u006f\u006e\u006d\u006c\u002e\u0074\u0065\u006d\u0070\u006c\u0061\u0074\u0065.\u006d\u0061\u0069\u006e\u002b\u0078\u006d\u006c");
+_dfe .ContentTypes .EnsureOverride ("/\u0070\u0070\u0074\u002fpr\u0065s\u0065\u006e\u0074\u0061\u0074i\u006f\u006e\u002e\u0078\u006d\u006c","\u0061\u0070\u0070\u006c\u0069\u0063\u0061t\u0069\u006f\u006e\u002f\u0076\u006e\u0064\u002e\u006f\u0070\u0065\u006e\u0078\u006d\u006c\u0066\u006f\u0072m\u0061\u0074\u0073\u002d\u006ff\u0066\u0069\u0063\u0065\u0064\u006f\u0063\u0075\u006de\u006e\u0074\u002e\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061\u0074\u0069\u006f\u006e\u006d\u006c\u002e\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061\u0074\u0069\u006f\u006e\u002e\u006d\u0061\u0069\u006e\u002b\u0078\u006d\u006c");
+};_gbb :=_cf .DocTypePresentation ;_bfag :=_bgf .NewWriter (_bbc );defer func (){if _fcfd :=_bfag .Close ();_fcfd !=nil {_ac .Log .Error ("\u0045R\u0052\u004f\u0052\u003a\u0020\u0025v",_fcfd );};}();if _bcc :=_ba .MarshalXML (_bfag ,_cf .BaseRelsFilename ,_dfe .Rels .X ());
+_bcc !=nil {return _bcc ;};if _efga :=_ba .MarshalXMLByType (_bfag ,_gbb ,_cf .ExtendedPropertiesType ,_dfe .AppProperties .X ());_efga !=nil {return _efga ;};if _cdg :=_ba .MarshalXMLByType (_bfag ,_gbb ,_cf .CorePropertiesType ,_dfe .CoreProperties .X ());
+_cdg !=nil {return _cdg ;};if _ggcb :=_ba .MarshalXMLByType (_bfag ,_gbb ,_cf .PresentationPropertiesType ,_dfe ._cag .X ());_ggcb !=nil {return _ggcb ;};if _eade :=_ba .MarshalXMLByType (_bfag ,_gbb ,_cf .ViewPropertiesType ,_dfe ._gcce .X ());_eade !=nil {return _eade ;
+};if _bgfg :=_ba .MarshalXMLByType (_bfag ,_gbb ,_cf .TableStylesType ,_dfe ._facd .X ());_bgfg !=nil {return _bgfg ;};if len (_dfe ._gbe )> 0{for _gab ,_cbgb :=range _dfe ._gbe {_afe :=_cf .AbsoluteFilename (_cf .DocTypePresentation ,_cf .CustomXMLType ,_dfe ._agbg [_gab ]);
+if _ecea :=_ba .MarshalXML (_bfag ,_afe ,_cbgb );_ecea !=nil {return _ecea ;};};};if _dfe .CustomProperties .X ()!=nil {if _ede :=_ba .MarshalXMLByType (_bfag ,_gbb ,_cf .CustomPropertiesType ,_dfe .CustomProperties .X ());_ede !=nil {return _ede ;};};
+if _dfe .Thumbnail !=nil {_dfa ,_ebd :=_bfag .Create ("\u0064\u006f\u0063Pr\u006f\u0070\u0073\u002f\u0074\u0068\u0075\u006d\u0062\u006e\u0061\u0069\u006c\u002e\u006a\u0070\u0065\u0067");if _ebd !=nil {return _ebd ;};if _agd :=_dc .Encode (_dfa ,_dfe .Thumbnail ,nil );
+_agd !=nil {return _agd ;};};_dff :=_cf .AbsoluteFilename (_gbb ,_cf .OfficeDocumentType ,0);if _cfc :=_ba .MarshalXML (_bfag ,_dff ,_dfe ._dcc );_cfc !=nil {return _cfc ;};if _eecd :=_ba .MarshalXML (_bfag ,_ba .RelationsPathFor (_dff ),_dfe ._cbc .X ());
+_eecd !=nil {return _eecd ;};for _eaa ,_ged :=range _dfe ._gdf {if _ged ==nil {continue ;};_becg :=_cf .AbsoluteFilename (_cf .DocTypePresentation ,_cf .SlideType ,_dfe ._deae [_eaa ]);if _fff :=_ba .MarshalXML (_bfag ,_becg ,_ged );_fff !=nil {return _fff ;
+};if !_dfe ._gda [_eaa ].IsEmpty (){_bcf :=_ba .RelationsPathFor (_becg );if _cba :=_ba .MarshalXML (_bfag ,_bcf ,_dfe ._gda [_eaa ].X ());_cba !=nil {return _cba ;};};};for _aac ,_bcec :=range _dfe ._bbf {if _bcec ==nil {continue ;};_bga :=_cf .AbsoluteFilename (_cf .DocTypePresentation ,_cf .SlideMasterType ,_dfe ._bdd [_aac ]);
+if _feaf :=_ba .MarshalXML (_bfag ,_bga ,_bcec );_feaf !=nil {return _feaf ;};if !_dfe ._cca [_aac ].IsEmpty (){_gca :=_ba .RelationsPathFor (_bga );if _afa :=_ba .MarshalXML (_bfag ,_gca ,_dfe ._cca [_aac ].X ());_afa !=nil {return _afa ;};};};for _bfd ,_bafd :=range _dfe ._bca {if _bafd ==nil {continue ;
+};_bef :=_cf .AbsoluteFilename (_cf .DocTypePresentation ,_cf .SlideLayoutType ,_bfd +1);if _def :=_ba .MarshalXML (_bfag ,_bef ,_bafd );_def !=nil {return _def ;};if !_dfe ._dgb [_bfd ].IsEmpty (){_acb :=_ba .RelationsPathFor (_bef );if _fdeb :=_ba .MarshalXML (_bfag ,_acb ,_dfe ._dgb [_bfd ].X ());
+_fdeb !=nil {return _fdeb ;};};};for _abca ,_cgd :=range _dfe ._cbd {if _cgd ==nil {continue ;};_adc :=_cf .AbsoluteFilename (_cf .DocTypePresentation ,_cf .ThemeType ,_dfe ._facg [_abca ]);if _cagb :=_ba .MarshalXML (_bfag ,_adc ,_cgd );_cagb !=nil {return _cagb ;
+};if !_dfe ._eca [_abca ].IsEmpty (){_becf :=_ba .RelationsPathFor (_adc );if _gffa :=_ba .MarshalXML (_bfag ,_becf ,_dfe ._eca [_abca ].X ());_gffa !=nil {return _gffa ;};};};for _ceef ,_deba :=range _dfe ._gdd {_cfba :=_cf .AbsoluteFilename (_gbb ,_cf .ChartType ,_ceef +1);
+if _gbc :=_ba .MarshalXML (_bfag ,_cfba ,_deba .X ());_gbc !=nil {return _gbc ;};};for _fggd ,_gdae :=range _dfe ._fcb {_bfg :=_cf .AbsoluteFilename (_gbb ,_cf .HandoutMasterType ,_fggd +1);if _bagc :=_ba .MarshalXML (_bfag ,_bfg ,_gdae );_bagc !=nil {return _bagc ;
+};};for _fegf ,_efbc :=range _dfe ._dbca {if _efbc ==nil {continue ;};_dgc :=_cf .AbsoluteFilename (_gbb ,_cf .NotesMasterType ,_dfe ._eddd [_fegf ]);if _eacc :=_ba .MarshalXML (_bfag ,_dgc ,_efbc );_eacc !=nil {return _eacc ;};};for _cdaa ,_eggc :=range _dfe .Images {_fbee :=_cdaa +1;
+if _abcg ,_acf :=_g .StringToNumbers (_eggc .Target ());_acf &&_fbee !=_abcg {_fbee =_abcg ;};if _ccbf :=_ad .AddImageToZip (_bfag ,_eggc ,_fbee ,_cf .DocTypePresentation );_ccbf !=nil {return _ccbf ;};};_dfe .ContentTypes .EnsureDefault ("\u0070\u006e\u0067","\u0069m\u0061\u0067\u0065\u002f\u0070\u006eg");
+_dfe .ContentTypes .EnsureDefault ("\u006a\u0070\u0065\u0067","\u0069\u006d\u0061\u0067\u0065\u002f\u006a\u0070\u0065\u0067");_dfe .ContentTypes .EnsureDefault ("\u006a\u0070\u0067","\u0069\u006d\u0061\u0067\u0065\u002f\u006a\u0070\u0065\u0067");_dfe .ContentTypes .EnsureDefault ("\u0077\u006d\u0066","i\u006d\u0061\u0067\u0065\u002f\u0078\u002d\u0077\u006d\u0066");
+if _edba :=_ba .MarshalXML (_bfag ,_cf .ContentTypesFilename ,_dfe .ContentTypes .X ());_edba !=nil {return _edba ;};if _caec :=_dfe .WriteExtraFiles (_bfag );_caec !=nil {return _caec ;};return nil ;};
 
-// OpenTemplate opens a template file.
-func OpenTemplate (fn string )(*Presentation ,error ){_bce ,_cffb :=Open (fn );if _cffb !=nil {return nil ,_cffb ;};return _bce ,nil ;};
+// ExtLst returns the ExtLst property.
+func (_aggb ViewProperties )ExtLst ()*_de .CT_ExtensionList {return _aggb ._bcb .ExtLst };
 
-// Close closes the presentation, removing any temporary files that might have been
-// created when opening a document.
-func (_bab *Presentation )Close ()error {if _bab .TmpPath !=""{return _cc .RemoveAll (_bab .TmpPath );};return nil ;};
+// GetChartSpaceByRelId returns a *crt.ChartSpace with the associated relation ID in the
+// slide.
+func (_bbae *Slide )GetChartSpaceByRelId (relId string )*_d .ChartSpace {_bgaa :=_bbae .getSlideRels ();if (_bgaa ==_ad .Relationships {}){return nil ;};_cbe :=_bgaa .GetTargetByRelId (relId );for _ ,_cbgbg :=range _bbae ._bbgag ._gdd {if _cbe ==_cbgbg .Target (){return _cbgbg ._dd ;
+};};return nil ;};
 
-// SlideMasters returns the slide masters defined in the presentation.
-func (_fagb *Presentation )SlideMasters ()[]SlideMaster {_cbcf :=[]SlideMaster {};for _ceab ,_edef :=range _fagb ._dfd {if _ceab < len (_fagb ._cac ){_cbcf =append (_cbcf ,SlideMaster {_fagb ,_fagb ._cac [_ceab ],_edef });};};return _cbcf ;};
-
-// NewPresentationProperties constructs a new PresentationProperties.
-func NewPresentationProperties ()PresentationProperties {return PresentationProperties {_fefg :_cf .NewPresentationPr ()};};
-
-// Slides returns the slides in the presentation.
-func (_bcec *Presentation )Slides ()[]Slide {_cccf :=[]Slide {};for _ecd ,_affc :=range _bcec ._fde {_cccf =append (_cccf ,Slide {_bcec ._dgf .SldIdLst .SldId [_ecd ],_affc ,_bcec ,nil });};return _cccf ;};
-
-// SaveAsTemplate writes the presentation out to a writer in the Zip package format as a template
-func (_daae *Presentation )SaveAsTemplate (w _ccf .Writer )error {return _daae .save (w ,true )};type sort2d []*TextItem ;
-
-// SlideLayouts returns a slice of all layouts in SlideMaster.
-func (_gcb SlideMaster )SlideLayouts ()[]SlideLayout {_cabe :=map[string ]int {};_agfe :=[]SlideLayout {};for _ ,_eeda :=range _gcb ._bfae .Relationships (){_caaa :=_ab .Replace (_eeda .Target (),".\u002e\u002f\u0073\u006c\u0069\u0064e\u004c\u0061\u0079\u006f\u0075\u0074\u0073\u002f\u0073l\u0069\u0064\u0065L\u0061y\u006f\u0075\u0074","",-1);
-_caaa =_ab .Replace (_caaa ,"\u002e\u0078\u006d\u006c","",-1);if _egeg ,_ggcdb :=_c .ParseInt (_caaa ,10,32);_ggcdb ==nil {_cabe [_eeda .ID ()]=int (_egeg );};};for _ ,_dca :=range _gcb ._bdga .SldLayoutIdLst .SldLayoutId {if _bdbc ,_egfg :=_cabe [_dca .RIdAttr ];
-_egfg {_gge :=_gcb ._cag ._cbag [_bdbc -1];_agfe =append (_agfe ,SlideLayout {_gge });};};return _agfe ;};func (_fbfc *Presentation )onNewRelationship (_gee *_gb .DecodeMap ,_eca ,_cbce string ,_cabg []*_d .File ,_cgfc *_b .Relationship ,_cdc _gb .Target )error {_aegc :=_gd .DocTypePresentation ;
-switch _cbce {case _gd .OfficeDocumentType :_fbfc ._dgf =_cf .NewPresentation ();_gee .AddTarget (_eca ,_fbfc ._dgf ,_cbce ,0);_gee .AddTarget (_gb .RelationsPathFor (_eca ),_fbfc ._cbb .X (),_cbce ,0);_cgfc .TargetAttr =_gd .RelativeFilename (_aegc ,_cdc .Typ ,_cbce ,0);
-case _gd .CorePropertiesType :_gee .AddTarget (_eca ,_fbfc .CoreProperties .X (),_cbce ,0);_cgfc .TargetAttr =_gd .RelativeFilename (_aegc ,_cdc .Typ ,_cbce ,0);case _gd .CustomPropertiesType :_gee .AddTarget (_eca ,_fbfc .CustomProperties .X (),_cbce ,0);
-_cgfc .TargetAttr =_gd .RelativeFilename (_aegc ,_cdc .Typ ,_cbce ,0);case _gd .PresentationPropertiesType :_gee .AddTarget (_eca ,_fbfc ._bcaf .X (),_cbce ,0);_cgfc .TargetAttr =_gd .RelativeFilename (_aegc ,_cdc .Typ ,_cbce ,0);case _gd .ViewPropertiesType :_gee .AddTarget (_eca ,_fbfc ._eeae .X (),_cbce ,0);
-_cgfc .TargetAttr =_gd .RelativeFilename (_aegc ,_cdc .Typ ,_cbce ,0);case _gd .TableStylesType :_gee .AddTarget (_eca ,_fbfc ._ffe .X (),_cbce ,0);_cgfc .TargetAttr =_gd .RelativeFilename (_aegc ,_cdc .Typ ,_cbce ,0);case _gd .HyperLinkType :_fffa :=_ee .NewCT_Hyperlink ();
-_gbbb :=uint32 (len (_fbfc ._ddd ));_gee .AddTarget (_eca ,_fffa ,_cbce ,_gbbb );_fbfc ._ddd =append (_fbfc ._ddd ,_fffa );case _gd .CustomXMLType :if _aedf ,_gdf :=_ae .StringToNumbers (_eca );_gdf {if len (_fbfc ._gfa )< _aedf {_gedaa :=&_gd .XSDAny {};
-_gee .AddTarget (_eca ,_gedaa ,_cbce ,uint32 (_aedf ));_fbfc ._gfa =append (_fbfc ._gfa ,_gedaa );_fbfc ._gag =append (_fbfc ._gag ,_aedf );_cgfc .TargetAttr =_gd .RelativeFilename (_aegc ,_cdc .Typ ,_cbce ,_aedf );};};case _gd .ChartType :_gcda :=chart {_ad :_g .NewChartSpace ()};
-_badab :=uint32 (len (_fbfc ._gcd ));_gee .AddTarget (_eca ,_gcda ._ad ,_cbce ,_badab );_fbfc ._gcd =append (_fbfc ._gcd ,&_gcda );_cgfc .TargetAttr =_gd .RelativeFilename (_aegc ,_cdc .Typ ,_cbce ,len (_fbfc ._gcd ));_gcda ._aba =_cgfc .TargetAttr ;case _gd .HandoutMasterType :_cfb :=_cf .NewHandoutMaster ();
-_faaa :=uint32 (len (_fbfc ._dbf ));_gee .AddTarget (_eca ,_cfb ,_cbce ,_faaa );_fbfc ._dbf =append (_fbfc ._dbf ,_cfb );_cgfc .TargetAttr =_gd .RelativeFilename (_aegc ,_cdc .Typ ,_cbce ,len (_fbfc ._dbf ));case _gd .NotesMasterType :if _aceg ,_gba :=_ae .StringToNumbers (_eca );
-_gba {if len (_fbfc ._efab )< _aceg {_eda :=_cf .NewNotesMaster ();_fbfc ._efab =append (_fbfc ._efab ,_eda );_fbfc ._bbd =append (_fbfc ._bbd ,_aceg );_gee .AddTarget (_eca ,_eda ,_cbce ,uint32 (_aceg ));_cgfc .TargetAttr =_gd .RelativeFilename (_aegc ,_cdc .Typ ,_cbce ,_aceg );
-};};case _gd .ExtendedPropertiesType :_gee .AddTarget (_eca ,_fbfc .AppProperties .X (),_cbce ,0);_cgfc .TargetAttr =_gd .RelativeFilename (_aegc ,_cdc .Typ ,_cbce ,0);case _gd .SlideType :if _bebf ,_cgfg :=_ae .StringToNumbers (_eca );_cgfg {if len (_fbfc ._fde )< _bebf {_agfd :=_cf .NewSld ();
-_fbfc ._fde =append (_fbfc ._fde ,_agfd );_fbfc ._ff =append (_fbfc ._ff ,_bebf );_gee .AddTarget (_eca ,_agfd ,_cbce ,uint32 (_bebf ));_cgfc .TargetAttr =_gd .RelativeFilename (_aegc ,_cdc .Typ ,_cbce ,_bebf );_adbb :=_ge .NewRelationships ();_gee .AddTarget (_gb .RelationsPathFor (_eca ),_adbb .X (),_cbce ,0);
-if len (_fbfc ._bafb )>=_bebf {_fbfc ._bafb [_bebf -1]=_adbb ;}else {_fbfc ._bafb =append (_fbfc ._bafb ,_adbb );};};};case _gd .SlideMasterType :if _ddef ,_cbe :=_ae .StringToNumbers (_eca );_cbe {if len (_fbfc ._dfd )< _ddef {_fcbc :=_cf .NewSldMaster ();
-if !_gee .AddTarget (_eca ,_fcbc ,_cbce ,uint32 (_ddef )){return nil ;};_fbfc ._dfd =append (_fbfc ._dfd ,_fcbc );_fbfc ._gceb =append (_fbfc ._gceb ,_ddef );_cgfc .TargetAttr =_gd .RelativeFilename (_aegc ,_cdc .Typ ,_cbce ,_ddef );_gecd :=_ge .NewRelationships ();
-_gee .AddTarget (_gb .RelationsPathFor (_eca ),_gecd .X (),_cbce ,0);if len (_fbfc ._cac )>=_ddef {_fbfc ._cac [_ddef -1]=_gecd ;}else {_fbfc ._cac =append (_fbfc ._bafb ,_gecd );};};};case _gd .SlideLayoutType :if _bege ,_dab :=_ae .StringToNumbers (_eca );
-_dab {_abff :=_cf .NewSldLayout ();if !_gee .AddTarget (_eca ,_abff ,_cbce ,uint32 (_bege )){return nil ;};for _cbg :=len (_fbfc ._cbag );_cbg < _bege ;_cbg ++{_fbfc ._cbag =append (_fbfc ._cbag ,nil );};_fbfc ._cbag [_bege -1]=_abff ;_cgfc .TargetAttr =_gd .RelativeFilename (_aegc ,_cdc .Typ ,_cbce ,_bege );
-for _gcdc :=len (_fbfc ._gbd );_gcdc < _bege ;_gcdc ++{_fbfc ._gbd =append (_fbfc ._gbd ,_ge .NewRelationships ());};_bfdb :=_ge .NewRelationships ();_gee .AddTarget (_gb .RelationsPathFor (_eca ),_bfdb .X (),_cbce ,0);_fbfc ._gbd [_bege -1]=_bfdb ;};case _gd .ThumbnailType :for _abde ,_cfgf :=range _cabg {if _cfgf ==nil {continue ;
-};if _cfgf .Name ==_eca {_gbdf ,_gfb :=_cfgf .Open ();if _gfb !=nil {return _ed .Errorf ("e\u0072\u0072\u006f\u0072\u0020\u0072e\u0061\u0064\u0069\u006e\u0067\u0020\u0074\u0068\u0075m\u0062\u006e\u0061i\u006c:\u0020\u0025\u0073",_gfb );};if _fbfc .Thumbnail ,_ ,_gfb =_eb .Decode (_gbdf );
-_gfb !=nil {return _ed .Errorf ("\u0065\u0072\u0072\u006fr\u0020\u0064\u0065\u0063\u006f\u0064\u0069\u006e\u0067\u0020t\u0068u\u006d\u0062\u006e\u0061\u0069\u006c\u003a \u0025\u0073",_gfb );};if _fada :=_gbdf .Close ();_fada !=nil {return _ed .Errorf ("e\u0072\u0072\u006f\u0072\u0020\u0063l\u006f\u0073\u0069\u006e\u0067\u0020\u0074\u0068\u0075m\u0062\u006e\u0061i\u006c:\u0020\u0025\u0073",_fada );
-};_cabg [_abde ]=nil ;};};case _gd .ThemeType :if _ffea ,_gagd :=_ae .StringToNumbers (_eca );_gagd {if len (_fbfc ._adfc )< _ffea {_fbeg :=_ee .NewTheme ();if !_gee .AddTarget (_eca ,_fbeg ,_cbce ,uint32 (_ffea )){return nil ;};_fbfc ._adfc =append (_fbfc ._adfc ,_fbeg );
-_fbfc ._dfgd =append (_fbfc ._dfgd ,_ffea );_cgfc .TargetAttr =_gd .RelativeFilename (_aegc ,_cdc .Typ ,_cbce ,_ffea );_cgee :=_ge .NewRelationships ();_gee .AddTarget (_gb .RelationsPathFor (_eca ),_cgee .X (),_cbce ,0);if len (_fbfc ._ec )>=_ffea {_fbfc ._ec [_ffea -1]=_cgee ;
-}else {_fbfc ._ec =append (_fbfc ._ec ,_cgee );};};};case _gd .ImageType :_eca =_be .Clean (_eca );if _fdcd ,_fec :=_fbfc ._dcc [_eca ];_fec {_cgfc .TargetAttr =_fdcd ;return nil ;};_ceb :="";for _gebc ,_bded :=range _cabg {if _bded ==nil {continue ;};
-if _bded .Name ==_eca {_edc ,_fgc :=_gb .ExtractToDiskTmp (_bded ,_fbfc .TmpPath );if _fgc !=nil {return _fgc ;};_dbfd ,_fgc :=_ge .ImageFromStorage (_edc );if _fgc !=nil {return _fgc ;};_ceb =_dbfd .Format ;if _dbfd .Format =="\u006a\u0070\u0065\u0067"&&_ab .HasSuffix (_eca ,"\u006a\u0070\u0067"){_ceb ="\u006a\u0070\u0067";
-};_ecbd :=_ge .MakeImageRef (_dbfd ,&_fbfc .DocBase ,_fbfc ._cbb );_ecbd .SetTarget ("\u002e\u002e\u002f"+_eca [4:]);_fbfc .Images =append (_fbfc .Images ,_ecbd );_cabg [_gebc ]=nil ;_aega :=len (_fbfc .Images );if _dbfa ,_gcce :=_ae .StringToNumbers (_eca );
-_gcce {_aega =_dbfa ;};_gee .RecordIndex (_eca ,_aega );break ;};};_agda :=_gee .IndexFor (_eca );_cgfc .TargetAttr =_gd .RelativeImageFilename (_aegc ,_cdc .Typ ,_cbce ,_agda ,_ceb );_fbfc ._dcc [_eca ]=_cgfc .TargetAttr ;default:_gg .Log .Debug ("\u0075\u006e\u0073\u0075\u0070p\u006f\u0072\u0074\u0065\u0064\u0020\u0072\u0065\u006c\u0061\u0074\u0069\u006fn\u0073\u0068\u0069\u0070\u0020\u0074\u0079\u0070\u0065\u003a\u0020\u0025\u0073\u0020\u0074\u0067\u0074\u003a\u0020\u0025\u0073",_cbce ,_eca );
-};return nil ;};
+// SetOffsetY sets vertical offset of text box in distance units (see measurement package).
+func (_effe TextBox )SetOffsetY (offY float64 ){_aaed :=_effe .getOff ();_ege :=_a .ToEMU (offY );_aaed .YAttr =_adb .ST_Coordinate {ST_CoordinateUnqualified :&_ege };};
 
 // SlideScreenSize represents the slide screen size as a 2 element array
 // representing the width and height in EMU units.
 type SlideScreenSize [2]int32 ;
 
-// Paragraphs returns the paragraphs defined in the placeholder.
-func (_ce PlaceHolder )Paragraphs ()[]_fb .Paragraph {_dgg :=[]_fb .Paragraph {};for _ ,_dgb :=range _ce ._daa .TxBody .P {_dgg =append (_dgg ,_fb .MakeParagraph (_dgb ));};return _dgg ;};
+// SetWidth sets width of slide screen size with given value in EMU units.
+func (_bbdc *SlideScreenSize )SetWidth (val int32 ){_bbdc [0]=val };func _fbf (_ceb []*_de .CT_GroupShapeChoice )[]*_de .CT_GroupShapeChoice {var _cgbag []*_de .CT_GroupShapeChoice ;for _ ,_bbga :=range _ceb {if _bbga .Pic ==nil {_cgbag =append (_cgbag ,_bbga );
+};};return _cgbag ;};
 
-// AddTable adds a new table to a placeholder.
-func (_deag PlaceHolder )AddTable ()*_ge .Table {_deag .Clear ();_gce :=_cf .NewCT_GroupShapeChoice ();_deag ._abd .CSld .SpTree .GroupShapeChoice =append (_deag ._abd .CSld .SpTree .GroupShapeChoice ,_gce );_eag :=_cf .NewCT_GraphicalObjectFrame ();_gce .GraphicFrame =_eag ;
-_eag .Xfrm .Off =_ee .NewCT_Point2D ();_ebd :=int64 (1);_eag .Xfrm .Off .XAttr =_ee .ST_Coordinate {ST_CoordinateUnqualified :&_ebd };_eag .Xfrm .Off .YAttr =_ee .ST_Coordinate {ST_CoordinateUnqualified :&_ebd };_dae :=_eag .Graphic .CT_GraphicalObject .GraphicData ;
-_dae .UriAttr ="\u0068\u0074\u0074\u0070\u003a\u002f\u002f\u0073\u0063\u0068\u0065\u006d\u0061\u0073\u002eo\u0070\u0065\u006e\u0078\u006d\u006c\u0066\u006f\u0072\u006d\u0061\u0074\u0073.\u006f\u0072\u0067\u002f\u0064\u0072\u0061\u0077\u0069\u006e\u0067\u006dl/\u0032\u0030\u0030\u0036\u002f\u0074\u0061\u0062\u006c\u0065";
-_aabc :=_ge .NewTableWithXfrm (_eag .Xfrm );_dae .Any =append (_dae .Any ,_aabc .X ());return _aabc ;};func (_febd *Presentation )save (_degd _ccf .Writer ,_abc bool )error {const _dfb ="\u0050\u0072\u0065\u0073en\u0074\u0061\u0074\u0069\u006f\u006e\u003a\u0070\u002e\u0053\u0061\u0076\u0065";
-if _fbae :=_febd ._dgf .Validate ();_fbae !=nil {_gg .Log .Debug ("\u0076\u0061\u006c\u0069\u0064\u0061\u0074\u0069\u006f\u006e\u0020\u0065\u0072\u0072\u006fr\u0020i\u006e\u0020\u0064\u006f\u0063\u0075\u006d\u0065\u006e\u0074\u003a\u0020\u0025\u0073",_fbae );
-};if !_e .GetLicenseKey ().IsLicensed ()&&!_geg {_ed .Println ("\u0055\u006e\u006ci\u0063\u0065\u006e\u0073e\u0064\u0020\u0076\u0065\u0072\u0073\u0069o\u006e\u0020\u006f\u0066\u0020\u0055\u006e\u0069\u004f\u0066\u0066\u0069\u0063\u0065");_ed .Println ("\u002d\u0020\u0047e\u0074\u0020\u0061\u0020\u0074\u0072\u0069\u0061\u006c\u0020\u006c\u0069\u0063\u0065\u006e\u0073\u0065\u0020\u006f\u006e\u0020\u0068\u0074\u0074\u0070\u0073\u003a\u002f\u002fu\u006e\u0069\u0064\u006f\u0063\u002e\u0069\u006f");
-return _ggc .New ("\u0075\u006e\u0069\u006f\u0066\u0066\u0069\u0063\u0065\u0020\u006ci\u0063\u0065\u006e\u0073\u0065\u0020\u0072\u0065\u0071\u0075i\u0072\u0065\u0064");};_deb :="\u0075n\u006b\u006e\u006f\u0077\u006e";if _afd ,_afed :=_degd .(*_cd .File );
-_afed {_deb =_afd .Name ();};if len (_febd ._ecf )==0{_aed ,_gde :=_e .GenRefId ("\u0070\u0077");if _gde !=nil {_gg .Log .Error ("\u0045R\u0052\u004f\u0052\u003a\u0020\u0025v",_gde );return _gde ;};_febd ._ecf =_aed ;};if _gfc :=_e .Track (_febd ._ecf ,_dfb ,_deb );
-_gfc !=nil {_gg .Log .Error ("\u0045R\u0052\u004f\u0052\u003a\u0020\u0025v",_gfc );return _gfc ;};if _abc {_febd .ContentTypes .RemoveOverride ("\u0061\u0070\u0070\u006c\u0069\u0063\u0061t\u0069\u006f\u006e\u002f\u0076\u006e\u0064\u002e\u006f\u0070\u0065\u006e\u0078\u006d\u006c\u0066\u006f\u0072m\u0061\u0074\u0073\u002d\u006ff\u0066\u0069\u0063\u0065\u0064\u006f\u0063\u0075\u006de\u006e\u0074\u002e\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061\u0074\u0069\u006f\u006e\u006d\u006c\u002e\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061\u0074\u0069\u006f\u006e\u002e\u006d\u0061\u0069\u006e\u002b\u0078\u006d\u006c");
-_febd .ContentTypes .EnsureOverride ("/\u0070\u0070\u0074\u002fpr\u0065s\u0065\u006e\u0074\u0061\u0074i\u006f\u006e\u002e\u0078\u006d\u006c","\u0061\u0070pl\u0069\u0063\u0061\u0074\u0069\u006f\u006e\u002f\u0076\u006e\u0064\u002e\u006f\u0070\u0065\u006e\u0078\u006d\u006c\u0066o\u0072\u006d\u0061\u0074s\u002d\u006f\u0066\u0066ic\u0065\u0064o\u0063u\u006d\u0065\u006e\u0074\u002e\u0070r\u0065\u0073\u0065n\u0074\u0061t\u0069\u006f\u006e\u006d\u006c\u002e\u0074\u0065\u006d\u0070\u006c\u0061\u0074\u0065.\u006d\u0061\u0069\u006e\u002b\u0078\u006d\u006c");
-}else {_febd .ContentTypes .RemoveOverride ("\u0061\u0070pl\u0069\u0063\u0061\u0074\u0069\u006f\u006e\u002f\u0076\u006e\u0064\u002e\u006f\u0070\u0065\u006e\u0078\u006d\u006c\u0066o\u0072\u006d\u0061\u0074s\u002d\u006f\u0066\u0066ic\u0065\u0064o\u0063u\u006d\u0065\u006e\u0074\u002e\u0070r\u0065\u0073\u0065n\u0074\u0061t\u0069\u006f\u006e\u006d\u006c\u002e\u0074\u0065\u006d\u0070\u006c\u0061\u0074\u0065.\u006d\u0061\u0069\u006e\u002b\u0078\u006d\u006c");
-_febd .ContentTypes .EnsureOverride ("/\u0070\u0070\u0074\u002fpr\u0065s\u0065\u006e\u0074\u0061\u0074i\u006f\u006e\u002e\u0078\u006d\u006c","\u0061\u0070\u0070\u006c\u0069\u0063\u0061t\u0069\u006f\u006e\u002f\u0076\u006e\u0064\u002e\u006f\u0070\u0065\u006e\u0078\u006d\u006c\u0066\u006f\u0072m\u0061\u0074\u0073\u002d\u006ff\u0066\u0069\u0063\u0065\u0064\u006f\u0063\u0075\u006de\u006e\u0074\u002e\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061\u0074\u0069\u006f\u006e\u006d\u006c\u002e\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061\u0074\u0069\u006f\u006e\u002e\u006d\u0061\u0069\u006e\u002b\u0078\u006d\u006c");
-};_bbbg :=_gd .DocTypePresentation ;_agag :=_d .NewWriter (_degd );defer func (){if _cge :=_agag .Close ();_cge !=nil {_gg .Log .Error ("\u0045R\u0052\u004f\u0052\u003a\u0020\u0025v",_cge );};}();if _gae :=_gb .MarshalXML (_agag ,_gd .BaseRelsFilename ,_febd .Rels .X ());
-_gae !=nil {return _gae ;};if _abca :=_gb .MarshalXMLByType (_agag ,_bbbg ,_gd .ExtendedPropertiesType ,_febd .AppProperties .X ());_abca !=nil {return _abca ;};if _aeeb :=_gb .MarshalXMLByType (_agag ,_bbbg ,_gd .CorePropertiesType ,_febd .CoreProperties .X ());
-_aeeb !=nil {return _aeeb ;};if _ceag :=_gb .MarshalXMLByType (_agag ,_bbbg ,_gd .PresentationPropertiesType ,_febd ._bcaf .X ());_ceag !=nil {return _ceag ;};if _geda :=_gb .MarshalXMLByType (_agag ,_bbbg ,_gd .ViewPropertiesType ,_febd ._eeae .X ());
-_geda !=nil {return _geda ;};if _gebd :=_gb .MarshalXMLByType (_agag ,_bbbg ,_gd .TableStylesType ,_febd ._ffe .X ());_gebd !=nil {return _gebd ;};if len (_febd ._gfa )> 0{for _efae ,_agc :=range _febd ._gfa {_agf :=_gd .AbsoluteFilename (_gd .DocTypePresentation ,_gd .CustomXMLType ,_febd ._gag [_efae ]);
-if _dage :=_gb .MarshalXML (_agag ,_agf ,_agc );_dage !=nil {return _dage ;};};};if _febd .CustomProperties .X ()!=nil {if _adef :=_gb .MarshalXMLByType (_agag ,_bbbg ,_gd .CustomPropertiesType ,_febd .CustomProperties .X ());_adef !=nil {return _adef ;
-};};if _febd .Thumbnail !=nil {_cfg ,_ebdc :=_agag .Create ("\u0064\u006f\u0063Pr\u006f\u0070\u0073\u002f\u0074\u0068\u0075\u006d\u0062\u006e\u0061\u0069\u006c\u002e\u006a\u0070\u0065\u0067");if _ebdc !=nil {return _ebdc ;};if _gbb :=_ef .Encode (_cfg ,_febd .Thumbnail ,nil );
-_gbb !=nil {return _gbb ;};};_gcec :=_gd .AbsoluteFilename (_bbbg ,_gd .OfficeDocumentType ,0);if _ece :=_gb .MarshalXML (_agag ,_gcec ,_febd ._dgf );_ece !=nil {return _ece ;};if _ddf :=_gb .MarshalXML (_agag ,_gb .RelationsPathFor (_gcec ),_febd ._cbb .X ());
-_ddf !=nil {return _ddf ;};for _adfe ,_fdge :=range _febd ._fde {if _fdge ==nil {continue ;};_cdg :=_gd .AbsoluteFilename (_gd .DocTypePresentation ,_gd .SlideType ,_febd ._ff [_adfe ]);if _gace :=_gb .MarshalXML (_agag ,_cdg ,_fdge );_gace !=nil {return _gace ;
-};if !_febd ._bafb [_adfe ].IsEmpty (){_ffac :=_gb .RelationsPathFor (_cdg );if _cbcc :=_gb .MarshalXML (_agag ,_ffac ,_febd ._bafb [_adfe ].X ());_cbcc !=nil {return _cbcc ;};};};for _gcf ,_dcge :=range _febd ._dfd {if _dcge ==nil {continue ;};_gfcf :=_gd .AbsoluteFilename (_gd .DocTypePresentation ,_gd .SlideMasterType ,_febd ._gceb [_gcf ]);
-if _fff :=_gb .MarshalXML (_agag ,_gfcf ,_dcge );_fff !=nil {return _fff ;};if !_febd ._cac [_gcf ].IsEmpty (){_dgdc :=_gb .RelationsPathFor (_gfcf );if _fbe :=_gb .MarshalXML (_agag ,_dgdc ,_febd ._cac [_gcf ].X ());_fbe !=nil {return _fbe ;};};};for _acd ,_decb :=range _febd ._cbag {if _decb ==nil {continue ;
-};_cdge :=_gd .AbsoluteFilename (_gd .DocTypePresentation ,_gd .SlideLayoutType ,_acd +1);if _gaa :=_gb .MarshalXML (_agag ,_cdge ,_decb );_gaa !=nil {return _gaa ;};if !_febd ._gbd [_acd ].IsEmpty (){_fbfd :=_gb .RelationsPathFor (_cdge );if _adefb :=_gb .MarshalXML (_agag ,_fbfd ,_febd ._gbd [_acd ].X ());
-_adefb !=nil {return _adefb ;};};};for _cfae ,_ffcd :=range _febd ._adfc {if _ffcd ==nil {continue ;};_cbccd :=_gd .AbsoluteFilename (_gd .DocTypePresentation ,_gd .ThemeType ,_febd ._dfgd [_cfae ]);if _abg :=_gb .MarshalXML (_agag ,_cbccd ,_ffcd );_abg !=nil {return _abg ;
-};if !_febd ._ec [_cfae ].IsEmpty (){_eaa :=_gb .RelationsPathFor (_cbccd );if _fagg :=_gb .MarshalXML (_agag ,_eaa ,_febd ._ec [_cfae ].X ());_fagg !=nil {return _fagg ;};};};for _bdf ,_bbdc :=range _febd ._gcd {_bcac :=_gd .AbsoluteFilename (_bbbg ,_gd .ChartType ,_bdf +1);
-if _gaca :=_gb .MarshalXML (_agag ,_bcac ,_bbdc .X ());_gaca !=nil {return _gaca ;};};for _faad ,_efg :=range _febd ._dbf {_cga :=_gd .AbsoluteFilename (_bbbg ,_gd .HandoutMasterType ,_faad +1);if _daad :=_gb .MarshalXML (_agag ,_cga ,_efg );_daad !=nil {return _daad ;
-};};for _fffe ,_fbeb :=range _febd ._efab {if _fbeb ==nil {continue ;};_cffa :=_gd .AbsoluteFilename (_bbbg ,_gd .NotesMasterType ,_febd ._bbd [_fffe ]);if _cbfa :=_gb .MarshalXML (_agag ,_cffa ,_fbeb );_cbfa !=nil {return _cbfa ;};};for _fcbd ,_edfc :=range _febd .Images {_dccg :=_fcbd +1;
-if _fdc ,_ggd :=_ae .StringToNumbers (_edfc .Target ());_ggd &&_dccg !=_fdc {_dccg =_fdc ;};if _eeeg :=_ge .AddImageToZip (_agag ,_edfc ,_dccg ,_gd .DocTypePresentation );_eeeg !=nil {return _eeeg ;};};_febd .ContentTypes .EnsureDefault ("\u0070\u006e\u0067","\u0069m\u0061\u0067\u0065\u002f\u0070\u006eg");
-_febd .ContentTypes .EnsureDefault ("\u006a\u0070\u0065\u0067","\u0069\u006d\u0061\u0067\u0065\u002f\u006a\u0070\u0065\u0067");_febd .ContentTypes .EnsureDefault ("\u006a\u0070\u0067","\u0069\u006d\u0061\u0067\u0065\u002f\u006a\u0070\u0065\u0067");_febd .ContentTypes .EnsureDefault ("\u0077\u006d\u0066","i\u006d\u0061\u0067\u0065\u002f\u0078\u002d\u0077\u006d\u0066");
-if _facg :=_gb .MarshalXML (_agag ,_gd .ContentTypesFilename ,_febd .ContentTypes .X ());_facg !=nil {return _facg ;};if _ede :=_febd .WriteExtraFiles (_agag );_ede !=nil {return _ede ;};return nil ;};
-
-// New initializes and returns a new presentation
-func New ()*Presentation {_afg :=_ggg ();_afg .ContentTypes .AddOverride ("/\u0070\u0070\u0074\u002fpr\u0065s\u0065\u006e\u0074\u0061\u0074i\u006f\u006e\u002e\u0078\u006d\u006c","\u0061\u0070\u0070\u006c\u0069\u0063\u0061t\u0069\u006f\u006e\u002f\u0076\u006e\u0064\u002e\u006f\u0070\u0065\u006e\u0078\u006d\u006c\u0066\u006f\u0072m\u0061\u0074\u0073\u002d\u006ff\u0066\u0069\u0063\u0065\u0064\u006f\u0063\u0075\u006de\u006e\u0074\u002e\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061\u0074\u0069\u006f\u006e\u006d\u006c\u002e\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061\u0074\u0069\u006f\u006e\u002e\u006d\u0061\u0069\u006e\u002b\u0078\u006d\u006c");
-_afg .ContentTypes .AddOverride ("\u0070\u0070\u0074\u002f\u0070\u0072\u0065\u0073\u0050\u0072\u006f\u0070s\u002e\u0078\u006d\u006c","\u0061\u0070\u0070\u006c\u0069c\u0061\u0074\u0069\u006f\u006e\u002fv\u006e\u0064\u002e\u006f\u0070\u0065\u006ex\u006d\u006c\u0066o\u0072\u006d\u0061\u0074s\u002d\u006f\u0066\u0066\u0069\u0063e\u0064\u006f\u0063\u0075\u006d\u0065\u006e\u0074\u002e\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061t\u0069\u006f\u006e\u006d\u006c\u002e\u0070\u0072\u0065\u0073\u0050\u0072\u006f\u0070\u0073\u002b\u0078\u006d\u006c");
-_afg .ContentTypes .AddOverride ("\u0070\u0070\u0074\u002f\u0076\u0069\u0065\u0077\u0050\u0072\u006f\u0070s\u002e\u0078\u006d\u006c","\u0061\u0070\u0070\u006c\u0069c\u0061\u0074\u0069\u006f\u006e\u002fv\u006e\u0064\u002e\u006f\u0070\u0065\u006ex\u006d\u006c\u0066o\u0072\u006d\u0061\u0074s\u002d\u006f\u0066\u0066\u0069\u0063e\u0064\u006f\u0063\u0075\u006d\u0065\u006e\u0074\u002e\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061t\u0069\u006f\u006e\u006d\u006c\u002e\u0076\u0069\u0065\u0077\u0050\u0072\u006f\u0070\u0073\u002b\u0078\u006d\u006c");
-_afg .ContentTypes .AddOverride ("\u0070\u0070\u0074\u002fta\u0062\u006c\u0065\u0053\u0074\u0079\u006c\u0065\u0073\u002e\u0078\u006d\u006c","\u0061\u0070\u0070\u006c\u0069c\u0061\u0074\u0069\u006f\u006e\u002f\u0076n\u0064\u002e\u006f\u0070\u0065\u006e\u0078\u006d\u006c\u0066\u006f\u0072\u006d\u0061\u0074\u0073\u002d\u006f\u0066\u0066\u0069\u0063\u0065\u0064\u006f\u0063\u0075\u006d\u0065\u006e\u0074\u002e\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061t\u0069\u006f\u006e\u006d\u006c\u002e\u0074\u0061\u0062\u006c\u0065\u0053t\u0079\u006c\u0065\u0073\u002b\u0078m\u006c");
-_afg .Rels .AddRelationship ("\u0064\u006f\u0063\u0050\u0072\u006f\u0070\u0073\u002f\u0063\u006f\u0072e\u002e\u0078\u006d\u006c","\u0068\u0074\u0074\u0070\u003a\u002f\u002f\u0073\u0063\u0068\u0065\u006d\u0061s\u002e\u006f\u0070\u0065\u006e\u0078\u006d\u006c\u0066o\u0072\u006d\u0061\u0074\u0073\u002e\u006f\u0072\u0067\u002f\u0070\u0061\u0063\u006ba\u0067\u0065\u002f\u0032\u0030\u0030\u0036\u002f\u0072\u0065\u006c\u0061\u0074\u0069\u006f\u006e\u0073\u0068\u0069\u0070\u0073\u002f\u006d\u0065\u0074\u0061\u0064\u0061\u0074\u0061/\u0063\u006f\u0072\u0065\u002d\u0070\u0072\u006f\u0070e\u0072\u0074i\u0065\u0073");
-_afg .Rels .AddRelationship ("\u0064\u006fc\u0050\u0072\u006fp\u0073\u002f\u0061\u0070\u0070\u002e\u0078\u006d\u006c","\u0068t\u0074\u0070\u003a\u002f\u002f\u0073\u0063\u0068\u0065\u006d\u0061\u0073\u002eo\u0070\u0065\u006ex\u006d\u006c\u0066\u006f\u0072\u006da\u0074\u0073.\u006f\u0072\u0067\u002f\u006f\u0066\u0066\u0069\u0063\u0065\u0044\u006f\u0063\u0075\u006d\u0065\u006e\u0074\u002f\u0032\u0030\u0030\u0036\u002f\u0072\u0065\u006c\u0061\u0074i\u006f\u006e\u0073\u0068\u0069p\u0073\u002f\u0065x\u0074\u0065\u006e\u0064\u0065d\u002d\u0070\u0072\u006f\u0070\u0065\u0072\u0074\u0069\u0065\u0073");
-_afg .Rels .AddRelationship ("p\u0070t\u002f\u0070\u0072\u0065\u0073\u0065\u006e\u0074a\u0074\u0069\u006f\u006e.x\u006d\u006c","\u0068\u0074\u0074\u0070\u003a\u002f\u002fs\u0063\u0068\u0065\u006d\u0061\u0073\u002e\u006f\u0070\u0065\u006e\u0078\u006d\u006c\u0066\u006f\u0072\u006da\u0074\u0073\u002e\u006f\u0072g\u002f\u006f\u0066\u0066\u0069\u0063\u0065\u0044\u006fc\u0075\u006d\u0065\u006e\u0074\u002f\u0032\u0030\u0030\u0036\u002f\u0072\u0065\u006c\u0061\u0074\u0069\u006f\u006e\u0073\u0068\u0069\u0070\u0073\u002f\u006f\u0066\u0066\u0069\u0063\u0065\u0044\u006f\u0063\u0075\u006d\u0065\u006e\u0074");
-_afg ._dgf .SldMasterIdLst =_cf .NewCT_SlideMasterIdList ();_dec :=_cf .NewSldMaster ();_dec .ClrMap .Bg1Attr =_ee .ST_ColorSchemeIndexLt1 ;_dec .ClrMap .Bg2Attr =_ee .ST_ColorSchemeIndexLt2 ;_dec .ClrMap .Tx1Attr =_ee .ST_ColorSchemeIndexDk1 ;_dec .ClrMap .Tx2Attr =_ee .ST_ColorSchemeIndexDk2 ;
-_dec .ClrMap .Accent1Attr =_ee .ST_ColorSchemeIndexAccent1 ;_dec .ClrMap .Accent2Attr =_ee .ST_ColorSchemeIndexAccent2 ;_dec .ClrMap .Accent3Attr =_ee .ST_ColorSchemeIndexAccent3 ;_dec .ClrMap .Accent4Attr =_ee .ST_ColorSchemeIndexAccent4 ;_dec .ClrMap .Accent5Attr =_ee .ST_ColorSchemeIndexAccent5 ;
-_dec .ClrMap .Accent6Attr =_ee .ST_ColorSchemeIndexAccent6 ;_dec .ClrMap .HlinkAttr =_ee .ST_ColorSchemeIndexHlink ;_dec .ClrMap .FolHlinkAttr =_ee .ST_ColorSchemeIndexFolHlink ;_afg ._dfd =append (_afg ._dfd ,_dec );_afg ._gceb =append (_afg ._gceb ,len (_afg ._dfd ));
-_dda :=_gd .AbsoluteFilename (_gd .DocTypePresentation ,_gd .SlideMasterType ,1);_afg .ContentTypes .AddOverride (_dda ,_gd .SlideMasterContentType );_eee :=_afg ._cbb .AddAutoRelationship (_gd .DocTypePresentation ,_gd .OfficeDocumentType ,1,_gd .SlideMasterType );
-_cde :=_cf .NewCT_SlideMasterIdListEntry ();_cde .IdAttr =_gd .Uint32 (2147483648);_cde .RIdAttr =_eee .ID ();_afg ._dgf .SldMasterIdLst .SldMasterId =append (_afg ._dgf .SldMasterIdLst .SldMasterId ,_cde );_gff :=_ge .NewRelationships ();_afg ._cac =append (_afg ._cac ,_gff );
-_agd :=_cf .NewSldLayout ();_fdf :=_gff .AddAutoRelationship (_gd .DocTypePresentation ,_gd .SlideMasterType ,1,_gd .SlideLayoutType );_cec :=_gd .AbsoluteFilename (_gd .DocTypePresentation ,_gd .SlideLayoutType ,1);_afg .ContentTypes .AddOverride (_cec ,_gd .SlideLayoutContentType );
-_gff .AddAutoRelationship (_gd .DocTypePresentation ,_gd .SlideMasterType ,1,_gd .ThemeType );_afg ._cbag =append (_afg ._cbag ,_agd );_dec .SldLayoutIdLst =_cf .NewCT_SlideLayoutIdList ();_ebdb :=_cf .NewCT_SlideLayoutIdListEntry ();_ebdb .IdAttr =_gd .Uint32 (2147483649);
-_ebdb .RIdAttr =_fdf .ID ();_dec .SldLayoutIdLst .SldLayoutId =append (_dec .SldLayoutIdLst .SldLayoutId ,_ebdb );_bbdb :=_ge .NewRelationships ();_afg ._gbd =append (_afg ._gbd ,_bbdb );_bbdb .AddAutoRelationship (_gd .DocTypePresentation ,_gd .SlideType ,1,_gd .SlideMasterType );
-_afg ._dgf .NotesSz .CxAttr =6858000;_afg ._dgf .NotesSz .CyAttr =9144000;_aga :=_ee .NewTheme ();_aga .NameAttr =_gd .String ("\u0075n\u0069o\u0066\u0066\u0069\u0063\u0065\u0020\u0054\u0068\u0065\u006d\u0065");_aga .ThemeElements .ClrScheme .NameAttr ="\u004f\u0066\u0066\u0069\u0063\u0065";
-_aga .ThemeElements .ClrScheme .Dk1 .SysClr =_ee .NewCT_SystemColor ();_aga .ThemeElements .ClrScheme .Dk1 .SysClr .LastClrAttr =_gd .String ("\u0030\u0030\u0030\u0030\u0030\u0030");_aga .ThemeElements .ClrScheme .Dk1 .SysClr .ValAttr =_ee .ST_SystemColorValWindowText ;
-_aga .ThemeElements .ClrScheme .Lt1 .SysClr =_ee .NewCT_SystemColor ();_aga .ThemeElements .ClrScheme .Lt1 .SysClr .LastClrAttr =_gd .String ("\u0066\u0066\u0066\u0066\u0066\u0066");_aga .ThemeElements .ClrScheme .Lt1 .SysClr .ValAttr =_ee .ST_SystemColorValWindow ;
-_aga .ThemeElements .ClrScheme .Dk2 .SrgbClr =_ee .NewCT_SRgbColor ();_aga .ThemeElements .ClrScheme .Dk2 .SrgbClr .ValAttr ="\u0034\u0034\u0035\u0034\u0036\u0061";_aga .ThemeElements .ClrScheme .Lt2 .SrgbClr =_ee .NewCT_SRgbColor ();_aga .ThemeElements .ClrScheme .Lt2 .SrgbClr .ValAttr ="\u0065\u0037\u0065\u0037\u0065\u0036";
-_aga .ThemeElements .ClrScheme .Accent1 .SrgbClr =_ee .NewCT_SRgbColor ();_aga .ThemeElements .ClrScheme .Accent1 .SrgbClr .ValAttr ="\u0034\u0034\u0037\u0032\u0063\u0034";_aga .ThemeElements .ClrScheme .Accent2 .SrgbClr =_ee .NewCT_SRgbColor ();_aga .ThemeElements .ClrScheme .Accent2 .SrgbClr .ValAttr ="\u0065\u0064\u0037\u0064\u0033\u0031";
-_aga .ThemeElements .ClrScheme .Accent3 .SrgbClr =_ee .NewCT_SRgbColor ();_aga .ThemeElements .ClrScheme .Accent3 .SrgbClr .ValAttr ="\u0061\u0035\u0061\u0035\u0061\u0035";_aga .ThemeElements .ClrScheme .Accent4 .SrgbClr =_ee .NewCT_SRgbColor ();_aga .ThemeElements .ClrScheme .Accent4 .SrgbClr .ValAttr ="\u0066\u0066\u0063\u0030\u0030\u0030";
-_aga .ThemeElements .ClrScheme .Accent5 .SrgbClr =_ee .NewCT_SRgbColor ();_aga .ThemeElements .ClrScheme .Accent5 .SrgbClr .ValAttr ="\u0035\u0062\u0039\u0062\u0064\u0035";_aga .ThemeElements .ClrScheme .Accent6 .SrgbClr =_ee .NewCT_SRgbColor ();_aga .ThemeElements .ClrScheme .Accent6 .SrgbClr .ValAttr ="\u0037\u0030\u0061\u0064\u0034\u0037";
-_aga .ThemeElements .ClrScheme .Hlink .SrgbClr =_ee .NewCT_SRgbColor ();_aga .ThemeElements .ClrScheme .Hlink .SrgbClr .ValAttr ="\u0030\u0035\u0036\u0033\u0063\u0031";_aga .ThemeElements .ClrScheme .FolHlink .SrgbClr =_ee .NewCT_SRgbColor ();_aga .ThemeElements .ClrScheme .FolHlink .SrgbClr .ValAttr ="\u0039\u0035\u0034\u0066\u0037\u0032";
-_aga .ThemeElements .FontScheme .NameAttr ="\u004f\u0066\u0066\u0069\u0063\u0065";_aga .ThemeElements .FontScheme .MajorFont .Latin .TypefaceAttr ="\u0043\u0061\u006c\u0069\u0062\u0072\u0069\u0020\u004c\u0069\u0067\u0068\u0074";_aga .ThemeElements .FontScheme .MinorFont .Latin .TypefaceAttr ="\u0043a\u006c\u0069\u0062\u0072\u0069";
-_aga .ThemeElements .FmtScheme .NameAttr =_gd .String ("\u004f\u0066\u0066\u0069\u0063\u0065");_egbg :=_ee .NewEG_FillProperties ();_aga .ThemeElements .FmtScheme .FillStyleLst .EG_FillProperties =append (_aga .ThemeElements .FmtScheme .FillStyleLst .EG_FillProperties ,_egbg );
-_egbg .FillPropertiesChoice .SolidFill =&_ee .CT_SolidColorFillProperties {SchemeClr :&_ee .CT_SchemeColor {ValAttr :_ee .ST_SchemeColorValPhClr }};_egbg =_ee .NewEG_FillProperties ();_aga .ThemeElements .FmtScheme .FillStyleLst .EG_FillProperties =append (_aga .ThemeElements .FmtScheme .FillStyleLst .EG_FillProperties ,_egbg );
-_aga .ThemeElements .FmtScheme .FillStyleLst .EG_FillProperties =append (_aga .ThemeElements .FmtScheme .FillStyleLst .EG_FillProperties ,_egbg );_egbg .FillPropertiesChoice .GradFill =&_ee .CT_GradientFillProperties {RotWithShapeAttr :_gd .Bool (true ),GsLst :&_ee .CT_GradientStopList {},ShadePropertiesChoice :&_ee .EG_ShadePropertiesChoice {Lin :&_ee .CT_LinearShadeProperties {}}};
-_egbg .FillPropertiesChoice .GradFill .ShadePropertiesChoice .Lin .AngAttr =_gd .Int32 (5400000);_egbg .FillPropertiesChoice .GradFill .ShadePropertiesChoice .Lin .ScaledAttr =_gd .Bool (false );_dcg :=_ee .NewCT_GradientStop ();_dcg .PosAttr .ST_PositiveFixedPercentageDecimal =_gd .Int32 (0);
-_dcg .SchemeClr =&_ee .CT_SchemeColor {ValAttr :_ee .ST_SchemeColorValPhClr };_egbg .FillPropertiesChoice .GradFill .GsLst .Gs =append (_egbg .FillPropertiesChoice .GradFill .GsLst .Gs ,_dcg );_dcg =_ee .NewCT_GradientStop ();_dcg .PosAttr .ST_PositiveFixedPercentageDecimal =_gd .Int32 (50000);
-_dcg .SchemeClr =&_ee .CT_SchemeColor {ValAttr :_ee .ST_SchemeColorValPhClr };_egbg .FillPropertiesChoice .GradFill .GsLst .Gs =append (_egbg .FillPropertiesChoice .GradFill .GsLst .Gs ,_dcg );_aga .ThemeElements .FmtScheme .LnStyleLst =_ee .NewCT_LineStyleList ();
-for _acf :=0;_acf < 3;_acf ++{_bdaa :=_ee .NewCT_LineProperties ();_bdaa .WAttr =_gd .Int32 (int32 (6350*(_acf +1)));_bdaa .CapAttr =_ee .ST_LineCapFlat ;_bdaa .CmpdAttr =_ee .ST_CompoundLineSng ;_bdaa .AlgnAttr =_ee .ST_PenAlignmentCtr ;_aga .ThemeElements .FmtScheme .LnStyleLst .Ln =append (_aga .ThemeElements .FmtScheme .LnStyleLst .Ln ,_bdaa );
-};_aga .ThemeElements .FmtScheme .EffectStyleLst =_ee .NewCT_EffectStyleList ();for _agaa :=0;_agaa < 3;_agaa ++{_bcd :=_ee .NewCT_EffectStyleItem ();_bcd .EffectPropertiesChoice .EffectLst =_ee .NewCT_EffectList ();_aga .ThemeElements .FmtScheme .EffectStyleLst .EffectStyle =append (_aga .ThemeElements .FmtScheme .EffectStyleLst .EffectStyle ,_bcd );
-};_ffa :=_ee .NewEG_FillProperties ();_ffa .FillPropertiesChoice .SolidFill =&_ee .CT_SolidColorFillProperties {SchemeClr :&_ee .CT_SchemeColor {ValAttr :_ee .ST_SchemeColorValPhClr }};_aga .ThemeElements .FmtScheme .BgFillStyleLst .EG_FillProperties =append (_aga .ThemeElements .FmtScheme .BgFillStyleLst .EG_FillProperties ,_ffa );
-_aga .ThemeElements .FmtScheme .BgFillStyleLst .EG_FillProperties =append (_aga .ThemeElements .FmtScheme .BgFillStyleLst .EG_FillProperties ,_ffa );_aga .ThemeElements .FmtScheme .BgFillStyleLst .EG_FillProperties =append (_aga .ThemeElements .FmtScheme .BgFillStyleLst .EG_FillProperties ,_egbg );
-_afg ._adfc =append (_afg ._adfc ,_aga );_gga :=_gd .AbsoluteFilename (_gd .DocTypePresentation ,_gd .ThemeType ,1);_afg .ContentTypes .AddOverride (_gga ,_gd .ThemeContentType );_afg ._cbb .AddAutoRelationship (_gd .DocTypePresentation ,_gd .OfficeDocumentType ,1,_gd .ThemeType );
-_gfd :=_ge .NewRelationships ();_afg ._ec =append (_afg ._ec ,_gfd );_afg ._dfgd =append (_afg ._dfgd ,len (_afg ._adfc ));return _afg ;};
-
-// Themes returns an array of presentation themes.
-func (_dccf *Presentation )Themes ()[]*_ee .Theme {return _dccf ._adfc };
-
-// PrnPr returns the PrnPr property.
-func (_fab PresentationProperties )PrnPr ()*_cf .CT_PrintProperties {return _fab ._fefg .PrnPr };
-
-// GetSlideLayout returns a slide layout related to the slide.
-func (_cbgg *Slide )GetSlideLayout ()*_cf .SldLayout {_ggfa :=_cbgg .getSlideRels ();for _ ,_cffbe :=range _ggfa .Relationships (){if _cffbe .Type ()==_gd .SlideLayoutType {if _dfgf ,_ege :=_ae .StringToNumbers (_cffbe .Target ());_ege {return _cbgg ._cbab ._cbag [_dfgf -1];
-};return nil ;};};return nil ;};
-
-// Type returns the type of the slide layout.
-func (_bdfdf SlideLayout )Type ()_cf .ST_SlideLayoutType {return _bdfdf ._cdef .TypeAttr };
-
-// AddImage adds an image textbox to a slide.
-func (_bdb Slide )AddImage (img _ge .ImageRef )Image {_fbd :=_cf .NewCT_GroupShapeChoice ();_bdb ._gddb .CSld .SpTree .GroupShapeChoice =append (_bdb ._gddb .CSld .SpTree .GroupShapeChoice ,_fbd );_cgca :=_cf .NewCT_Picture ();_fbd .Pic =_cgca ;_cgca .NvPicPr .CNvPicPr =_ee .NewCT_NonVisualPictureProperties ();
-_cgca .NvPicPr .CNvPicPr .PicLocks =_ee .NewCT_PictureLocking ();_cgca .NvPicPr .CNvPicPr .PicLocks .NoChangeAspectAttr =_gd .Bool (true );_cgca .BlipFill =_ee .NewCT_BlipFillProperties ();_cgca .BlipFill .Blip =_ee .NewCT_Blip ();_ddab :=_bdb .AddImageToRels (img );
-_cgca .BlipFill .Blip .EmbedAttr =_gd .String (_ddab );_cgca .BlipFill .FillModePropertiesChoice .Stretch =_ee .NewCT_StretchInfoProperties ();_cgca .BlipFill .FillModePropertiesChoice .Stretch .FillRect =_ee .NewCT_RelativeRect ();_cgca .SpPr =_ee .NewCT_ShapeProperties ();
-_cgca .SpPr .GeometryChoice .PrstGeom =_ee .NewCT_PresetGeometry2D ();_cgca .SpPr .GeometryChoice .PrstGeom .PrstAttr =_ee .ST_ShapeTypeRect ;_cbcb :=Image {_cgca };_dfbd :=img .Size ();_cbcb .Properties ().SetWidth (_f .Distance (_dfbd .X )*_f .Pixel72 );
-_cbcb .Properties ().SetHeight (_f .Distance (_dfbd .Y )*_f .Pixel72 );_cbcb .Properties ().SetPosition (0,0);return _cbcb ;};
-
-// AddTable adds an empty table to a slide.
-func (_dcd Slide )AddTable ()*_ge .Table {_ffd :=_cf .NewCT_GroupShapeChoice ();_dcd ._gddb .CSld .SpTree .GroupShapeChoice =append (_dcd ._gddb .CSld .SpTree .GroupShapeChoice ,_ffd );_bbbfd :=_cf .NewCT_GraphicalObjectFrame ();_ffd .GraphicFrame =_bbbfd ;
-_bbbfd .Xfrm .Off =_ee .NewCT_Point2D ();_dfcg :=int64 (1);_bbbfd .Xfrm .Off .XAttr =_ee .ST_Coordinate {ST_CoordinateUnqualified :&_dfcg };_bbbfd .Xfrm .Off .YAttr =_ee .ST_Coordinate {ST_CoordinateUnqualified :&_dfcg };_ceg :=_bbbfd .Graphic .CT_GraphicalObject .GraphicData ;
-_ceg .UriAttr ="\u0068\u0074\u0074\u0070\u003a\u002f\u002f\u0073\u0063\u0068\u0065\u006d\u0061\u0073\u002eo\u0070\u0065\u006e\u0078\u006d\u006c\u0066\u006f\u0072\u006d\u0061\u0074\u0073.\u006f\u0072\u0067\u002f\u0064\u0072\u0061\u0077\u0069\u006e\u0067\u006dl/\u0032\u0030\u0030\u0036\u002f\u0074\u0061\u0062\u006c\u0065";
-_dcga :=_ge .NewTableWithXfrm (_bbbfd .Xfrm );_ceg .Any =append (_ceg .Any ,_dcga .X ());return _dcga ;};
-
-// GetPlaceholder returns a placeholder given its type.  If there are multiplace
-// placeholders of the same type, this method returns the first one.  You must use the
-// PlaceHolders() method to access the others.
-func (_efff Slide )GetPlaceholder (t _cf .ST_PlaceholderType )(PlaceHolder ,error ){for _ ,_dgfb :=range _efff ._gddb .CSld .SpTree .GroupShapeChoice {if _dgfb .Sp !=nil &&_dgfb .Sp .NvSpPr !=nil &&_dgfb .Sp .NvSpPr .NvPr !=nil &&_dgfb .Sp .NvSpPr .NvPr .Ph !=nil {if _dgfb .Sp .NvSpPr .NvPr .Ph .TypeAttr ==t {return PlaceHolder {_dgfb .Sp ,_efff ._gddb },nil ;
-};};};return PlaceHolder {},_ggc .New ("\u0075\u006e\u0061\u0062\u006c\u0065\u0020\u0074\u006f\u0020\u0066i\u006e\u0064\u0020\u0070\u006c\u0061\u0063\u0065\u0068\u006fl\u0064\u0065\u0072");};
-
-// X returns the inner wrapped XML type.
-func (_fcd PlaceHolder )X ()*_cf .CT_Shape {return _fcd ._daa };
-
-// Height returns slide screen size height in EMU units.
-func (_febg *SlideScreenSize )Height ()int32 {return _febg [1]};
-
-// GetImageByRelID returns an ImageRef with the associated relation ID in the
-// document.
-func (_cgb *Presentation )GetImageByRelID (relID string )(_ge .ImageRef ,bool ){for _ ,_cacg :=range _cgb .Images {if _cacg .RelID ()==relID {return _cacg ,true ;};};return _ge .ImageRef {},false ;};
-
-// SlideText is an array of extracted text items which has some methods for representing extracted text from a slide.
-type SlideText struct{Items []*TextItem ;};
-
-// NewViewProperties constructs a new ViewProperties.
-func NewViewProperties ()ViewProperties {return ViewProperties {_dddf :_cf .NewViewPr ()}};
-
-// AddImageToRels adds an image relationship to a slide without putting image on the slide.
-func (_cbed Slide )AddImageToRels (img _ge .ImageRef )string {_gcfd :=0;for _eabe ,_gef :=range _cbed ._cbab .Images {if _gef ==img {_gcfd =_eabe +1;break ;};};var _dcce string ;for _dccee ,_gfdd :=range _cbed ._cbab .Slides (){if _gfdd ._gddb ==_cbed ._gddb {_egac :=_ed .Sprintf ("\u002e\u002e\u002f\u006ded\u0069\u0061\u002f\u0069\u006d\u0061\u0067\u0065\u0025\u0064\u002e\u0025\u0073",_gcfd ,img .Format ());
-_fcaf :=_cbed ._cbab ._bafb [_dccee ].AddRelationship (_egac ,_gd .ImageType );_dcce =_fcaf .ID ();};};return _dcce ;};
-
-// SlideMaster is the slide master for a presentation.
-type SlideMaster struct{_cag *Presentation ;_bfae _ge .Relationships ;_bdga *_cf .SldMaster ;};
-
-// X returns the inner wrapped XML type.
-func (_gdag *Presentation )X ()*_cf .Presentation {return _gdag ._dgf };
-
-// PlaceHolders returns all of the content place holders within a given slide.
-func (_gegc Slide )PlaceHolders ()[]PlaceHolder {_acfb :=[]PlaceHolder {};for _ ,_aedb :=range _gegc ._gddb .CSld .SpTree .GroupShapeChoice {if _aedb .Sp !=nil &&_aedb .Sp .NvSpPr !=nil &&_aedb .Sp .NvSpPr .NvPr !=nil &&_aedb .Sp .NvSpPr .NvPr .Ph !=nil {_acfb =append (_acfb ,PlaceHolder {_aedb .Sp ,_gegc ._gddb });
-};};return _acfb ;};
-
-// SetOffsetX sets horizontal offset of text box in distance units (see measurement package).
-func (_bdaf TextBox )SetOffsetX (offX float64 ){_dbgc :=_bdaf .getOff ();_cfe :=_f .ToEMU (offX );_dbgc .XAttr =_ee .ST_Coordinate {ST_CoordinateUnqualified :&_cfe };};
-
-// ExtractText returns text from a presentation as a PresentationText object.
-func (_aff *Presentation )ExtractText ()*PresentationText {_dfg :=[]*SlideText {};for _ ,_edb :=range _aff .Slides (){_bag :=_edb .ExtractText ();if _bag !=nil {_dfg =append (_dfg ,_bag );};};return &PresentationText {Slides :_dfg };};
-
-// X returns the inner wrapped XML type.
-func (_adfef ViewProperties )X ()*_cf .ViewPr {return _adfef ._dddf };
-
-// PresentationText is an array of extracted text items which has some methods for representing extracted text.
-type PresentationText struct{Slides []*SlideText ;};
-
-// TableInfo is used for keep information about a table, a row and a cell where the text is located.
-type TableInfo struct{Table *_ee .CT_Table ;Row *_ee .CT_TableRow ;Cell *_ee .CT_TableCell ;RowIndex int ;ColIndex int ;};
-
-// Text returns text from a presentation as one string separated with line breaks.
-func (_gaf *PresentationText )Text ()string {_gdgc :=_df .NewBuffer ([]byte {});for _ ,_fgd :=range _gaf .Slides {_gdgc .WriteString (_fgd .Text ());};return _gdgc .String ();};var (SlideScreenSize16x9 =SlideScreenSize {12192000,6858000};SlideScreenSize4x3 =SlideScreenSize {9144000,6858000};
-SlideScreenSizeA4 =SlideScreenSize {9906000,6858000};);
-
-// NewSlideScreenSize returns slide screen size with default MS PowerPoint slide screen size 16x9.
-func NewSlideScreenSize ()SlideScreenSize {return NewSlideScreenSizeWithValue (SlideScreenSize16x9 [0],SlideScreenSize16x9 [1]);};
-
-// GetLayoutByName retrieves a slide layout given a layout name.
-func (_bggg *Presentation )GetLayoutByName (name string )(SlideLayout ,error ){for _ ,_fea :=range _bggg ._cbag {if _fea .CSld .NameAttr !=nil &&name ==*_fea .CSld .NameAttr {return SlideLayout {_fea },nil ;};};return SlideLayout {},_ggc .New ("\u0075\u006eab\u006c\u0065\u0020t\u006f\u0020\u0066\u0069nd \u006cay\u006f\u0075\u0074\u0020\u0077\u0069\u0074h \u0074\u0068\u0061\u0074\u0020\u006e\u0061m\u0065");
-};
-
-// HtmlPubPr returns the HtmlPubPr property.
-func (_bfg PresentationProperties )HtmlPubPr ()*_cf .CT_HtmlPublishProperties {return _bfg ._fefg .HtmlPubPr ;};
-
-// X returns the inner wrapped XML type.
-func (_fced SlideLayout )X ()*_cf .SldLayout {return _fced ._cdef };
-
-// GetColorBySchemeColor returns *dml.CT_Color mapped to scheme colors like dk1, lt1 etc. depending on what theme is used in the presentation.
-func (_dce *Presentation )GetColorBySchemeColor (schClr _ee .ST_SchemeColorVal )*_ee .CT_Color {if len (_dce ._dfd )==0||len (_dce ._adfc )==0{return nil ;};var _ddfe _ee .ST_ColorSchemeIndex ;_dee :=_dce ._dfd [0];_gagde :=_dee .ClrMap ;switch schClr .String (){case "\u0062\u0067\u0031":_ddfe =_gagde .Bg1Attr ;
-case "\u0062\u0067\u0032":_ddfe =_gagde .Bg2Attr ;case "\u0074\u0078\u0031":_ddfe =_gagde .Tx1Attr ;case "\u0074\u0078\u0032":_ddfe =_gagde .Tx2Attr ;case "\u0061c\u0063\u0065\u006e\u0074\u0031":_ddfe =_gagde .Accent1Attr ;case "\u0061c\u0063\u0065\u006e\u0074\u0032":_ddfe =_gagde .Accent2Attr ;
-case "\u0061c\u0063\u0065\u006e\u0074\u0033":_ddfe =_gagde .Accent3Attr ;case "\u0061c\u0063\u0065\u006e\u0074\u0034":_ddfe =_gagde .Accent4Attr ;case "\u0061c\u0063\u0065\u006e\u0074\u0035":_ddfe =_gagde .Accent5Attr ;case "\u0061c\u0063\u0065\u006e\u0074\u0036":_ddfe =_gagde .Accent6Attr ;
-case "\u0068\u006c\u0069n\u006b":_ddfe =_gagde .HlinkAttr ;case "\u0066\u006f\u006c\u0048\u006c\u0069\u006e\u006b":_ddfe =_gagde .FolHlinkAttr ;case "\u0064\u006b\u0031":_ddfe =_ee .ST_ColorSchemeIndexDk1 ;case "\u0064\u006b\u0032":_ddfe =_ee .ST_ColorSchemeIndexDk2 ;
-case "\u006c\u0074\u0031":_ddfe =_ee .ST_ColorSchemeIndexLt1 ;case "\u006c\u0074\u0032":_ddfe =_ee .ST_ColorSchemeIndexLt2 ;default:_ddfe =_ee .ST_ColorSchemeIndexUnset ;};_abdf :=_dce ._adfc [0];_cccd :=_abdf .ThemeElements ;if _cccd ==nil {return nil ;
-};var _ddcc *_ee .CT_Color ;_fdfe :=_cccd .ClrScheme ;switch _ddfe .String (){case "\u0064\u006b\u0031":_ddcc =_fdfe .Dk1 ;case "\u0064\u006b\u0032":_ddcc =_fdfe .Dk2 ;case "\u006c\u0074\u0031":_ddcc =_fdfe .Lt1 ;case "\u006c\u0074\u0032":_ddcc =_fdfe .Lt2 ;
-case "\u0061c\u0063\u0065\u006e\u0074\u0031":_ddcc =_fdfe .Accent1 ;case "\u0061c\u0063\u0065\u006e\u0074\u0032":_ddcc =_fdfe .Accent2 ;case "\u0061c\u0063\u0065\u006e\u0074\u0033":_ddcc =_fdfe .Accent3 ;case "\u0061c\u0063\u0065\u006e\u0074\u0034":_ddcc =_fdfe .Accent4 ;
-case "\u0061c\u0063\u0065\u006e\u0074\u0035":_ddcc =_fdfe .Accent5 ;case "\u0061c\u0063\u0065\u006e\u0074\u0036":_ddcc =_fdfe .Accent6 ;case "\u0068\u006c\u0069n\u006b":_ddcc =_fdfe .Hlink ;case "\u0066\u006f\u006c\u0048\u006c\u0069\u006e\u006b":_ddcc =_fdfe .FolHlink ;
-default:return nil ;};return _ddcc ;};
-
-// X returns the inner wrapped XML type.
-func (_cbbd *SlideSize )X ()*_cf .CT_SlideSize {return _cbbd ._dba };
-
-// Size returns slide size value as SlideScreenSize.
-func (_eeebf *SlideSize )Size ()SlideScreenSize {return SlideScreenSize {_eeebf ._dba .CxAttr ,_eeebf ._dba .CyAttr };};
-
-// SetHeight sets height of slide screen size with given value in EMU units.
-func (_edg *SlideScreenSize )SetHeight (val int32 ){_edg [1]=val };
-
-// GetChartSpaceByRelId returns a *crt.ChartSpace with the associated relation ID in the
-// slide.
-func (_dfcb *Slide )GetChartSpaceByRelId (relId string )*_g .ChartSpace {_adfd :=_dfcb .getSlideRels ();if (_adfd ==_ge .Relationships {}){return nil ;};_gacag :=_adfd .GetTargetByRelId (relId );for _ ,_bbbd :=range _dfcb ._cbab ._gcd {if _gacag ==_bbbd .Target (){return _bbbd ._ad ;
-};};return nil ;};
-
-// ShowPr returns the ShowPr property.
-func (_aaba PresentationProperties )ShowPr ()*_cf .CT_ShowProperties {return _aaba ._fefg .ShowPr };
-
-// Sid returns the sid of slide
-func (_bcad Slide )Sid ()*_cf .CT_SlideIdListEntry {return _bcad ._egde };func (_bacf TextBox )getOff ()*_ee .CT_Point2D {if _bacf ._bcfg .SpPr ==nil {_bacf ._bcfg .SpPr =_ee .NewCT_ShapeProperties ();};if _bacf ._bcfg .SpPr .Xfrm ==nil {_bacf ._bcfg .SpPr .Xfrm =_ee .NewCT_Transform2D ();
-};if _bacf ._bcfg .SpPr .Xfrm .Off ==nil {_bacf ._bcfg .SpPr .Xfrm .Off =_ee .NewCT_Point2D ();};return _bacf ._bcfg .SpPr .Xfrm .Off ;};
-
-// SaveToFileAsTemplate writes the Presentation out to a file as a template.
-func (_eggb *Presentation )SaveToFileAsTemplate (path string )error {return _eggb .saveToFile (path ,true );};
-
-// SlideLayouts returns the slide layouts defined in the presentation.
-func (_dedd *Presentation )SlideLayouts ()[]SlideLayout {_bec :=[]SlideLayout {};for _ ,_gfg :=range _dedd ._cbag {if _gfg ==nil {continue ;};if _gfg .CSld .NameAttr ==nil {continue ;};_bec =append (_bec ,SlideLayout {_gfg });};return _bec ;};
-
-// WebPr returns the WebPr property.
-func (_cbdb PresentationProperties )WebPr ()*_cf .CT_WebProperties {return _cbdb ._fefg .WebPr };
-
-// Slide represents a slide of a presentation.
-type Slide struct{_egde *_cf .CT_SlideIdListEntry ;_gddb *_cf .Sld ;_cbab *Presentation ;_daea *_ee .CT_ColorMapping ;};
-
-// Type returns the placeholder type
-func (_bde PlaceHolder )Type ()_cf .ST_PlaceholderType {return _bde ._daa .NvSpPr .NvPr .Ph .TypeAttr };
-
-// SlideSize returns presentation slide size.
-func (_fgcb *Presentation )SlideSize ()SlideSize {if _fgcb ._dgf .SldSz ==nil {_fgcb ._dgf .SldSz =_cf .NewCT_SlideSize ();};return SlideSize {_fgcb ._dgf .SldSz ,_fgcb };};
-
-// GetColorBySchemeColor returns *dml.CT_Color mapped to scheme colors like dk1, lt1 etc. depending on what theme is used in the presentation.
-func (_cfag *Slide )GetColorBySchemeColor (schClr _ee .ST_SchemeColorVal )*_ee .CT_Color {_cfag .ensureClrMap ();_cgec :=_cfag ._daea ;if _cgec ==nil {return nil ;};var _cebd _ee .ST_ColorSchemeIndex ;switch schClr .String (){case "\u0062\u0067\u0031":_cebd =_cgec .Bg1Attr ;
-case "\u0062\u0067\u0032":_cebd =_cgec .Bg2Attr ;case "\u0074\u0078\u0031":_cebd =_cgec .Tx1Attr ;case "\u0074\u0078\u0032":_cebd =_cgec .Tx2Attr ;case "\u0061c\u0063\u0065\u006e\u0074\u0031":_cebd =_cgec .Accent1Attr ;case "\u0061c\u0063\u0065\u006e\u0074\u0032":_cebd =_cgec .Accent2Attr ;
-case "\u0061c\u0063\u0065\u006e\u0074\u0033":_cebd =_cgec .Accent3Attr ;case "\u0061c\u0063\u0065\u006e\u0074\u0034":_cebd =_cgec .Accent4Attr ;case "\u0061c\u0063\u0065\u006e\u0074\u0035":_cebd =_cgec .Accent5Attr ;case "\u0061c\u0063\u0065\u006e\u0074\u0036":_cebd =_cgec .Accent6Attr ;
-case "\u0068\u006c\u0069n\u006b":_cebd =_cgec .HlinkAttr ;case "\u0066\u006f\u006c\u0048\u006c\u0069\u006e\u006b":_cebd =_cgec .FolHlinkAttr ;case "\u0064\u006b\u0031":_cebd =_ee .ST_ColorSchemeIndexDk1 ;case "\u0064\u006b\u0032":_cebd =_ee .ST_ColorSchemeIndexDk2 ;
-case "\u006c\u0074\u0031":_cebd =_ee .ST_ColorSchemeIndexLt1 ;case "\u006c\u0074\u0032":_cebd =_ee .ST_ColorSchemeIndexLt2 ;default:_cebd =_ee .ST_ColorSchemeIndexUnset ;};_edfcc :=_cfag ._cbab ._adfc [0];_bbbb :=_edfcc .ThemeElements ;if _bbbb ==nil {return nil ;
-};var _eefb *_ee .CT_Color ;_dedc :=_bbbb .ClrScheme ;switch _cebd .String (){case "\u0064\u006b\u0031":_eefb =_dedc .Dk1 ;case "\u0064\u006b\u0032":_eefb =_dedc .Dk2 ;case "\u006c\u0074\u0031":_eefb =_dedc .Lt1 ;case "\u006c\u0074\u0032":_eefb =_dedc .Lt2 ;
-case "\u0061c\u0063\u0065\u006e\u0074\u0031":_eefb =_dedc .Accent1 ;case "\u0061c\u0063\u0065\u006e\u0074\u0032":_eefb =_dedc .Accent2 ;case "\u0061c\u0063\u0065\u006e\u0074\u0033":_eefb =_dedc .Accent3 ;case "\u0061c\u0063\u0065\u006e\u0074\u0034":_eefb =_dedc .Accent4 ;
-case "\u0061c\u0063\u0065\u006e\u0074\u0035":_eefb =_dedc .Accent5 ;case "\u0061c\u0063\u0065\u006e\u0074\u0036":_eefb =_dedc .Accent6 ;case "\u0068\u006c\u0069n\u006b":_eefb =_dedc .Hlink ;case "\u0066\u006f\u006c\u0048\u006c\u0069\u006e\u006b":_eefb =_dedc .FolHlink ;
-default:return nil ;};return _eefb ;};
-
-// SlideSize represents a slide size of a presentation.
-type SlideSize struct{_dba *_cf .CT_SlideSize ;_bcgd *Presentation ;};
-
-// AddDefaultSlideWithLayout tries to replicate what PowerPoint does when
-// inserting a slide with a new style by clearing placeholder content and removing
-// some placeholders.  Use AddSlideWithLayout if you need more control.
-func (_abab *Presentation )AddDefaultSlideWithLayout (l SlideLayout )(Slide ,error ){_fga ,_dgfe :=_abab .AddSlideWithLayout (l );for _ ,_ccef :=range _fga .PlaceHolders (){_ccef .Clear ();switch _ccef .Type (){case _cf .ST_PlaceholderTypeFtr ,_cf .ST_PlaceholderTypeDt ,_cf .ST_PlaceholderTypeSldNum :if _bbb :=_ccef .Remove ();
-_bbb !=nil {return Slide {},_bbb ;};};};return _fga ,_dgfe ;};
-
-// ValidateWithPath validates the slide passing path informaton for a better
-// error message.
-func (_cgc Slide )ValidateWithPath (path string )error {if _cbaf :=_cgc ._gddb .ValidateWithPath (path );_cbaf !=nil {return _cbaf ;};for _ ,_bcf :=range _cgc ._gddb .CSld .SpTree .GroupShapeChoice {if _bcf .Sp !=nil &&_bcf .Sp .TxBody !=nil {if len (_bcf .Sp .TxBody .P )==0{return _ggc .New (path +"\u0020\u003a \u0073\u006c\u0069\u0064\u0065 \u0073\u0068\u0061\u0070\u0065 \u0077\u0069\u0074\u0068\u0020\u0061\u0020\u0074\u0078\u0062\u006f\u0064\u0079\u0020\u006d\u0075\u0073\u0074\u0020\u0063\u006f\u006e\u0074\u0061\u0069\u006e\u0020\u0070\u0061\u0072\u0061\u0067\u0072\u0061\u0070\u0068\u0073");
-};};};return nil ;};const _ade float64 =500000;
+// ShowCommentsAttr returns the WebPr property.
+func (_gac ViewProperties )ShowCommentsAttr ()*bool {return _gac ._bcb .ShowCommentsAttr };
 
 // NewSlideScreenSizeWithValue returns slide screen size with given width and height.
 // Width and Height value is in EMU units, use our measurement.ToEMU to convert the -
 // width and height value.
 func NewSlideScreenSizeWithValue (width ,height int32 )SlideScreenSize {return SlideScreenSize {width ,height };};
 
-// ExtLst returns the ExtLst property.
-func (_cfdf PresentationProperties )ExtLst ()*_cf .CT_ExtensionList {return _cfdf ._fefg .ExtLst };
+// SlideLayouts returns a slice of all layouts in SlideMaster.
+func (_gcf SlideMaster )SlideLayouts ()[]SlideLayout {_dec :=map[string ]int {};_cced :=[]SlideLayout {};for _ ,_bge :=range _gcf ._efba .Relationships (){_aebf :=_fb .Replace (_bge .Target (),".\u002e\u002f\u0073\u006c\u0069\u0064e\u004c\u0061\u0079\u006f\u0075\u0074\u0073\u002f\u0073l\u0069\u0064\u0065L\u0061y\u006f\u0075\u0074","",-1);
+_aebf =_fb .Replace (_aebf ,"\u002e\u0078\u006d\u006c","",-1);if _bebe ,_caa :=_b .ParseInt (_aebf ,10,32);_caa ==nil {_dec [_bge .ID ()]=int (_bebe );};};for _ ,_eafg :=range _gcf ._cgea .SldLayoutIdLst .SldLayoutId {if _bbaf ,_dcde :=_dec [_eafg .RIdAttr ];
+_dcde {_dbgf :=_gcf ._cab ._bca [_bbaf -1];_cced =append (_cced ,SlideLayout {_dbgf });};};return _cced ;};
 
-// ViewProperties contains presentation specific properties.
-type ViewProperties struct{_dddf *_cf .ViewPr };
+// SlideText is an array of extracted text items which has some methods for representing extracted text from a slide.
+type SlideText struct{Items []*TextItem ;};
 
-// X returns the inner wrapped XML type.
-func (_agg PresentationProperties )X ()*_cf .PresentationPr {return _agg ._fefg };type chart struct{_ad *_g .ChartSpace ;_ba string ;_aba string ;};
+// SorterViewPr returns the SorterViewPr property.
+func (_fdfd ViewProperties )SorterViewPr ()*_de .CT_SlideSorterViewProperties {return _fdfd ._bcb .SorterViewPr ;};
 
-// NormalViewPr returns the NormalViewPr property.
-func (_abbd ViewProperties )NormalViewPr ()*_cf .CT_NormalViewProperties {return _abbd ._dddf .NormalViewPr ;};
-
-// ClrMru returns the ClrMru property.
-func (_abf PresentationProperties )ClrMru ()*_ee .CT_ColorMRU {return _abf ._fefg .ClrMru };func (_agdg *Presentation )addLayoutFromSlide (_faf Slide )error {_ecfd :=1;for _ ,_fafd :=range _agdg .Images {if _cecd ,_fed :=_ae .StringToNumbers (_fafd .Target ());
-_fed &&_cecd >=_ecfd {_ecfd =_cecd +1;};};_agdg ._cbag =append (_agdg ._cbag ,_faf .GetSlideLayout ());_egc :=_faf .getSlideLayoutRels ();for _ ,_dcbe :=range _egc .X ().Relationship {if _dcbe .TypeAttr ==_gd .ImageType {_ccdg ,_cccb :=_faf ._cbab .GetImageByTarget (_dcbe .TargetAttr );
-if _cccb {if _gec ,_caca :=_ae .StringToNumbers (_ccdg .Target ());_caca &&_gec < _ecfd {_ccdg .SetTarget (_ab .ReplaceAll (_ccdg .Target (),_ed .Sprint (_gec ),_ed .Sprint (_ecfd )));_dcbe .TargetAttr =_ccdg .Target ();_ecfd =_ecfd +1;};_agdg .Images =append (_agdg .Images ,_ccdg );
-};};};_agdg ._gbd =append (_agdg ._gbd ,_egc );if len (_agdg ._dfd )> 0&&len (_agdg ._cac )> 0{_bfbe :=_agdg ._cac [0].AddAutoRelationship (_gd .DocTypePresentation ,_gd .SlideMasterType ,len (_agdg ._cbag ),_gd .SlideLayoutType );_agdg ._cac [0].Reorder ();
-_abb :=_cf .NewCT_SlideLayoutIdListEntry ();_abb .IdAttr =_gd .Uint32 (2147483649);_abb .RIdAttr =_bfbe .ID ();for _ ,_gdae :=range _agdg ._dfd [0].SldLayoutIdLst .SldLayoutId {if *_gdae .IdAttr >=*_abb .IdAttr {_abb .IdAttr =_gd .Uint32 ((*_gdae .IdAttr +2));
-};};_agdg ._dfd [0].SldLayoutIdLst .SldLayoutId =append (_agdg ._dfd [0].SldLayoutIdLst .SldLayoutId ,_abb );};_aafe :=_gd .AbsoluteFilename (_gd .DocTypePresentation ,_gd .SlideLayoutType ,len (_agdg ._cbag ));_agdg .ContentTypes .AddOverride (_aafe ,_gd .SlideLayoutContentType );
-return nil ;};
-
-// ExtLst returns the ExtLst property.
-func (_bdac ViewProperties )ExtLst ()*_cf .CT_ExtensionList {return _bdac ._dddf .ExtLst };
-
-// Presentation is the a presentation base document.
-type Presentation struct{_ge .DocBase ;_dgf *_cf .Presentation ;_cbb _ge .Relationships ;_fde []*_cf .Sld ;_bafb []_ge .Relationships ;_ff []int ;_dfd []*_cf .SldMaster ;_cac []_ge .Relationships ;_gceb []int ;_cbag []*_cf .SldLayout ;_gbd []_ge .Relationships ;
-_adfc []*_ee .Theme ;_ec []_ge .Relationships ;_dfgd []int ;_ffe _ge .TableStyles ;_bcaf PresentationProperties ;_eeae ViewProperties ;_ddd []*_ee .CT_Hyperlink ;_gcd []*chart ;_dbf []*_cf .HandoutMaster ;_efab []*_cf .NotesMaster ;_bbd []int ;_gfa []*_gd .XSDAny ;
-_gag []int ;_dcc map[string ]string ;_ecf string ;};
+// GetPlaceholder returns a placeholder given its type.  If there are multiplace
+// placeholders of the same type, this method returns the first one.  You must use the
+// PlaceHolders() method to access the others.
+func (_dcef Slide )GetPlaceholder (t _de .ST_PlaceholderType )(PlaceHolder ,error ){for _ ,_ggeg :=range _dcef ._deeg .CSld .SpTree .GroupShapeChoice {if _ggeg .Sp !=nil &&_ggeg .Sp .NvSpPr !=nil &&_ggeg .Sp .NvSpPr .NvPr !=nil &&_ggeg .Sp .NvSpPr .NvPr .Ph !=nil {if _ggeg .Sp .NvSpPr .NvPr .Ph .TypeAttr ==t {return PlaceHolder {_ggeg .Sp ,_dcef ._deeg },nil ;
+};};};return PlaceHolder {},_fc .New ("\u0075\u006e\u0061\u0062\u006c\u0065\u0020\u0074\u006f\u0020\u0066i\u006e\u0064\u0020\u0070\u006c\u0061\u0063\u0065\u0068\u006fl\u0064\u0065\u0072");};
 
 // Properties returns the properties of the TextBox.
-func (_cage TextBox )Properties ()_fb .ShapeProperties {if _cage ._bcfg .SpPr ==nil {_cage ._bcfg .SpPr =_ee .NewCT_ShapeProperties ();};return _fb .MakeShapeProperties (_cage ._bcfg .SpPr );};
+func (_gcc Image )Properties ()_cg .ShapeProperties {if _gcc ._fde .SpPr ==nil {_gcc ._fde .SpPr =_adb .NewCT_ShapeProperties ();};return _cg .MakeShapeProperties (_gcc ._fde .SpPr );};
 
-// Less is for implementing sorting of two locations. Symbols share the same location if they are in the same paragraph or table. One location is 'less' than another first by y coordinate, if y coordinates are equal or differ by less than yEpsilon, then x coordinates are compared, then if they are also equal, indexes of locations in the table are compared, then positions of locations in a paragraph.
-func (_dega sort2d )Less (i ,j int )bool {_aaf ,_fbf :=_dega [i ],_dega [j ];_fcc ,_adf :=_aaf ._aee ,_fbf ._aee ;_ded ,_fcf :=len (_fcc )-1,len (_adf )-1;_da ,_fad :=0,0;for {_cab ,_dead ,_efa ,_fba ,_dde ,_cbd ,_ddc ,_fgdf :=_fcc [_da ]._bea ,_adf [_fad ]._bea ,_fcc [_da ]._eea ,_adf [_fad ]._eea ,_fcc [_da ]._cg ,_adf [_fad ]._cg ,_fcc [_da ]._de ,_adf [_fad ]._de ;
-if _cab ==_dead ||((_bf .Abs (float64 (_cab )-float64 (_dead ))< _ade )&&((_cab >=_dead &&_cab <=_fba )||(_dead >=_cab &&_dead <=_efa ))&&(_ddc < _cbd ||_dde > _fgdf )){if _dde ==_cbd {if _da < _ded &&_fad < _fcf {_da ++;_fad ++;continue ;};if _da >=_ded &&_fad >=_fcf {break ;
-};return _da >=_ded ;}else {return _dde < _cbd ;};}else {return _cab < _dead ;};};_bage ,_dad ,_dag ,_efb :=_aaf ._gc ,_fbf ._gc ,_aaf ._cb ,_fbf ._cb ;if _bage ==_dad {return _dag <=_efb ;};return _bage < _dad ;};
+// NotesTextViewPr returns the NotesTextViewPr property.
+func (_fgaa ViewProperties )NotesTextViewPr ()*_de .CT_NotesTextViewProperties {return _fgaa ._bcb .NotesTextViewPr ;};
+
+// X returns the inner wrapped XML type.
+func (_cgbb SlideLayout )X ()*_de .SldLayout {return _cgbb ._gcee };
+
+// SlideMasters returns the slide masters defined in the presentation.
+func (_gba *Presentation )SlideMasters ()[]SlideMaster {_fabc :=[]SlideMaster {};for _egge ,_gae :=range _gba ._bbf {if _egge < len (_gba ._cca ){_fabc =append (_fabc ,SlideMaster {_gba ,_gba ._cca [_egge ],_gae });};};return _fabc ;};
+
+// Text returns text from a slide as one string separated with line breaks.
+func (_fge *SlideText )Text ()string {_eg :=_ff .NewBuffer ([]byte {});for _ ,_aae :=range _fge .Items {if _aae .Text !=""{_eg .WriteString (_aae .Text );_eg .WriteString ("\u000a");};};return _eg .String ();};
+
+// ExtractText returns text from a presentation as a PresentationText object.
+func (_ce *Presentation )ExtractText ()*PresentationText {_ef :=[]*SlideText {};for _ ,_ea :=range _ce .Slides (){_edd :=_ea .ExtractText ();if _edd !=nil {_ef =append (_ef ,_edd );};};return &PresentationText {Slides :_ef };};
+
+// LastViewAttr returns the LastViewAttr property.
+func (_ecabc ViewProperties )LastViewAttr ()_de .ST_ViewType {return _ecabc ._bcb .LastViewAttr };
+
+// AddTable adds a new table to a placeholder.
+func (_dce PlaceHolder )AddTable ()*_ad .Table {_dce .Clear ();_ecg :=_de .NewCT_GroupShapeChoice ();_dce ._fbd .CSld .SpTree .GroupShapeChoice =append (_dce ._fbd .CSld .SpTree .GroupShapeChoice ,_ecg );_bfc :=_de .NewCT_GraphicalObjectFrame ();_ecg .GraphicFrame =_bfc ;
+_bfc .Xfrm .Off =_adb .NewCT_Point2D ();_affd :=int64 (1);_bfc .Xfrm .Off .XAttr =_adb .ST_Coordinate {ST_CoordinateUnqualified :&_affd };_bfc .Xfrm .Off .YAttr =_adb .ST_Coordinate {ST_CoordinateUnqualified :&_affd };_ddd :=_bfc .Graphic .CT_GraphicalObject .GraphicData ;
+_ddd .UriAttr ="\u0068\u0074\u0074\u0070\u003a\u002f\u002f\u0073\u0063\u0068\u0065\u006d\u0061\u0073\u002eo\u0070\u0065\u006e\u0078\u006d\u006c\u0066\u006f\u0072\u006d\u0061\u0074\u0073.\u006f\u0072\u0067\u002f\u0064\u0072\u0061\u0077\u0069\u006e\u0067\u006dl/\u0032\u0030\u0030\u0036\u002f\u0074\u0061\u0062\u006c\u0065";
+_bafg :=_ad .NewTableWithXfrm (_bfc .Xfrm );_ddd .Any =append (_ddd .Any ,_bafg .X ());return _bafg ;};
+
+// SlideSize returns presentation slide size.
+func (_deff *Presentation )SlideSize ()SlideSize {if _deff ._dcc .SldSz ==nil {_deff ._dcc .SldSz =_de .NewCT_SlideSize ();};return SlideSize {_deff ._dcc .SldSz ,_deff };};
+
+// SetOffsetX sets horizontal offset of text box in distance units (see measurement package).
+func (_deaa TextBox )SetOffsetX (offX float64 ){_bfcbb :=_deaa .getOff ();_cggc :=_a .ToEMU (offX );_bfcbb .XAttr =_adb .ST_Coordinate {ST_CoordinateUnqualified :&_cggc };};
+
+// OpenTemplate opens a template file.
+func OpenTemplate (fn string )(*Presentation ,error ){_efda ,_cad :=Open (fn );if _cad !=nil {return nil ,_cad ;};return _efda ,nil ;};
+
+// X returns the inner wrapped XML type.
+func (_dba *SlideSize )X ()*_de .CT_SlideSize {return _dba ._bdb };
+
+// PlaceHolders returns all of the content place holders within a given slide.
+func (_ddde Slide )PlaceHolders ()[]PlaceHolder {_dafg :=[]PlaceHolder {};for _ ,_agcd :=range _ddde ._deeg .CSld .SpTree .GroupShapeChoice {if _agcd .Sp !=nil &&_agcd .Sp .NvSpPr !=nil &&_agcd .Sp .NvSpPr .NvPr !=nil &&_agcd .Sp .NvSpPr .NvPr .Ph !=nil {_dafg =append (_dafg ,PlaceHolder {_agcd .Sp ,_ddde ._deeg });
+};};return _dafg ;};func _fae ()*Presentation {_fbgg :=&Presentation {_dcc :_de .NewPresentation ()};_fbgg ._dcc .SldIdLst =_de .NewCT_SlideIdList ();_fbgg ._dcc .ConformanceAttr =_bg .ST_ConformanceClassTransitional ;_fbgg .AppProperties =_ad .NewAppProperties ();
+_fbgg .CoreProperties =_ad .NewCoreProperties ();_fbgg ._facd =_ad .NewTableStyles ();_fbgg .ContentTypes =_ad .NewContentTypes ();_fbgg .Rels =_ad .NewRelationships ();_fbgg ._cbc =_ad .NewRelationships ();_fbgg ._cag =NewPresentationProperties ();_fbgg ._gcce =NewViewProperties ();
+_fbgg ._fdfb =map[string ]string {};return _fbgg ;};
+
+// RemoveSlide removes a slide from a presentation.
+func (_agbd *Presentation )RemoveSlide (s Slide )error {_cdceg :=false ;_cce :=0;for _cbb ,_edfc :=range _agbd ._gdf {if _edfc ==s ._deeg {if _agbd ._dcc .SldIdLst .SldId [_cbb ]!=s ._bea {return _fc .New ("i\u006e\u0063\u006f\u006e\u0073\u0069s\u0074\u0065\u006e\u0063\u0079\u0020i\u006e\u0020\u0073\u006c\u0069\u0064\u0065s\u0020\u0061\u006e\u0064\u0020\u0049\u0044\u0020\u006c\u0069s\u0074");
+};copy (_agbd ._gdf [_cbb :],_agbd ._gdf [_cbb +1:]);_agbd ._gdf =_agbd ._gdf [0:len (_agbd ._gdf )-1];copy (_agbd ._gda [_cbb :],_agbd ._gda [_cbb +1:]);_agbd ._gda =_agbd ._gda [0:len (_agbd ._gda )-1];copy (_agbd ._dcc .SldIdLst .SldId [_cbb :],_agbd ._dcc .SldIdLst .SldId [_cbb +1:]);
+_agbd ._dcc .SldIdLst .SldId =_agbd ._dcc .SldIdLst .SldId [0:len (_agbd ._dcc .SldIdLst .SldId )-1];copy (_agbd ._deae [_cbb :],_agbd ._deae [_cbb +1:]);_agbd ._deae =_agbd ._deae [0:len (_agbd ._deae )-1];_cdceg =true ;_cce =_cbb ;};};if !_cdceg {return _fc .New ("u\u006ea\u0062\u006c\u0065\u0020\u0074\u006f\u0020\u0066i\u006e\u0064\u0020\u0073li\u0064\u0065");
+};_fgf :=_cf .AbsoluteFilename (_cf .DocTypePresentation ,_cf .SlideType ,0);return _agbd .ContentTypes .RemoveOverrideByIndex (_fgf ,_cce );};
+
+// Read reads a document from an io.Reader.
+func Read (r _e .ReaderAt ,size int64 )(*Presentation ,error ){const _aca ="\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061\u0074\u0069\u006f\u006e:\u0052\u0065\u0061\u0064";if !_cc .GetLicenseKey ().IsLicensed ()&&!_ffe {_ab .Println ("\u0055\u006e\u006ci\u0063\u0065\u006e\u0073e\u0064\u0020\u0076\u0065\u0072\u0073\u0069o\u006e\u0020\u006f\u0066\u0020\u0055\u006e\u0069\u004f\u0066\u0066\u0069\u0063\u0065");
+_ab .Println ("\u002d\u0020\u0047e\u0074\u0020\u0061\u0020\u0074\u0072\u0069\u0061\u006c\u0020\u006c\u0069\u0063\u0065\u006e\u0073\u0065\u0020\u006f\u006e\u0020\u0068\u0074\u0074\u0070\u0073\u003a\u002f\u002fu\u006e\u0069\u0064\u006f\u0063\u002e\u0069\u006f");
+return nil ,_fc .New ("\u0075\u006e\u0069\u006f\u0066\u0066\u0069\u0063\u0065\u0020\u006ci\u0063\u0065\u006e\u0073\u0065\u0020\u0072\u0065\u0071\u0075i\u0072\u0065\u0064");};_edgd :="\u0075n\u006b\u006e\u006f\u0077\u006e";if _gbdg ,_dga :=r .(*_ga .File );
+_dga {_edgd =_gbdg .Name ();};_fcfc :=_fae ();_gcgd ,_gef :=_cc .GenRefId ("\u0070\u0072");if _gef !=nil {_ac .Log .Error ("\u0045R\u0052\u004f\u0052\u003a\u0020\u0025v",_gef );return nil ,_gef ;};_fcfc ._fbdg =_gcgd ;if _ffd :=_cc .Track (_fcfc ._fbdg ,_aca ,_edgd );
+_ffd !=nil {_ac .Log .Error ("\u0045R\u0052\u004f\u0052\u003a\u0020\u0025v",_ffd );return nil ,_ffd ;};_bfdd ,_gef :=_db .TempDir ("\u0075\u006e\u0069\u006f\u0066\u0066\u0069\u0063\u0065-\u0070\u0070\u0074\u0078");if _gef !=nil {return nil ,_gef ;};_fcfc .TmpPath =_bfdd ;
+_geg ,_gef :=_bgf .NewReader (r ,size );if _gef !=nil {return nil ,_ab .Errorf ("\u0070a\u0072s\u0069\u006e\u0067\u0020\u007a\u0069\u0070\u003a\u0020\u0025\u0073",_gef );};_gfc :=[]*_bgf .File {};_gfc =append (_gfc ,_geg .File ...);_dead :=false ;for _ ,_gdfg :=range _gfc {if _gdfg .FileHeader .Name =="\u0064\u006f\u0063\u0050ro\u0070\u0073\u002f\u0063\u0075\u0073\u0074\u006f\u006d\u002e\u0078\u006d\u006c"{_dead =true ;
+break ;};};if _dead {_fcfc .CreateCustomProperties ();};_dggb :=_ba .DecodeMap {};_dggb .SetOnNewRelationshipFunc (_fcfc .onNewRelationship );_dggb .AddTarget (_cf .ContentTypesFilename ,_fcfc .ContentTypes .X (),"",0);_dggb .AddTarget (_cf .BaseRelsFilename ,_fcfc .Rels .X (),"",0);
+if _cafc :=_dggb .Decode (_gfc );_cafc !=nil {return nil ,_cafc ;};for _ ,_acag :=range _gfc {if _acag ==nil {continue ;};if _ced :=_fcfc .AddExtraFileFromZip (_acag );_ced !=nil {return nil ,_ced ;};};if _dead {_cffg :=false ;for _ ,_cgbc :=range _fcfc .Rels .X ().Relationship {if _cgbc .TargetAttr =="\u0064\u006f\u0063\u0050ro\u0070\u0073\u002f\u0063\u0075\u0073\u0074\u006f\u006d\u002e\u0078\u006d\u006c"{_cffg =true ;
+break ;};};if !_cffg {_fcfc .AddCustomRelationships ();};};return _fcfc ,nil ;};func (_cff *Presentation )onNewRelationship (_effd *_ba .DecodeMap ,_egced ,_facdf string ,_bfdg []*_bgf .File ,_fdd *_c .Relationship ,_cagg _ba .Target )error {_afgc :=_cf .DocTypePresentation ;
+switch _facdf {case _cf .OfficeDocumentType :_cff ._dcc =_de .NewPresentation ();_effd .AddTarget (_egced ,_cff ._dcc ,_facdf ,0);_effd .AddTarget (_ba .RelationsPathFor (_egced ),_cff ._cbc .X (),_facdf ,0);_fdd .TargetAttr =_cf .RelativeFilename (_afgc ,_cagg .Typ ,_facdf ,0);
+case _cf .CorePropertiesType :_effd .AddTarget (_egced ,_cff .CoreProperties .X (),_facdf ,0);_fdd .TargetAttr =_cf .RelativeFilename (_afgc ,_cagg .Typ ,_facdf ,0);case _cf .CustomPropertiesType :_effd .AddTarget (_egced ,_cff .CustomProperties .X (),_facdf ,0);
+_fdd .TargetAttr =_cf .RelativeFilename (_afgc ,_cagg .Typ ,_facdf ,0);case _cf .PresentationPropertiesType :_effd .AddTarget (_egced ,_cff ._cag .X (),_facdf ,0);_fdd .TargetAttr =_cf .RelativeFilename (_afgc ,_cagg .Typ ,_facdf ,0);case _cf .ViewPropertiesType :_effd .AddTarget (_egced ,_cff ._gcce .X (),_facdf ,0);
+_fdd .TargetAttr =_cf .RelativeFilename (_afgc ,_cagg .Typ ,_facdf ,0);case _cf .TableStylesType :_effd .AddTarget (_egced ,_cff ._facd .X (),_facdf ,0);_fdd .TargetAttr =_cf .RelativeFilename (_afgc ,_cagg .Typ ,_facdf ,0);case _cf .HyperLinkType :_fbgac :=_adb .NewCT_Hyperlink ();
+_gea :=uint32 (len (_cff ._gfb ));_effd .AddTarget (_egced ,_fbgac ,_facdf ,_gea );_cff ._gfb =append (_cff ._gfb ,_fbgac );case _cf .CustomXMLType :if _ggb ,_egb :=_g .StringToNumbers (_egced );_egb {if len (_cff ._gbe )< _ggb {_dace :=&_cf .XSDAny {};
+_effd .AddTarget (_egced ,_dace ,_facdf ,uint32 (_ggb ));_cff ._gbe =append (_cff ._gbe ,_dace );_cff ._agbg =append (_cff ._agbg ,_ggb );_fdd .TargetAttr =_cf .RelativeFilename (_afgc ,_cagg .Typ ,_facdf ,_ggb );};};case _cf .ChartType :_efe :=chart {_dd :_d .NewChartSpace ()};
+_cgdb :=uint32 (len (_cff ._gdd ));_effd .AddTarget (_egced ,_efe ._dd ,_facdf ,_cgdb );_cff ._gdd =append (_cff ._gdd ,&_efe );_fdd .TargetAttr =_cf .RelativeFilename (_afgc ,_cagg .Typ ,_facdf ,len (_cff ._gdd ));_efe ._gdb =_fdd .TargetAttr ;case _cf .HandoutMasterType :_cdd :=_de .NewHandoutMaster ();
+_ceed :=uint32 (len (_cff ._fcb ));_effd .AddTarget (_egced ,_cdd ,_facdf ,_ceed );_cff ._fcb =append (_cff ._fcb ,_cdd );_fdd .TargetAttr =_cf .RelativeFilename (_afgc ,_cagg .Typ ,_facdf ,len (_cff ._fcb ));case _cf .NotesMasterType :if _bedg ,_ggf :=_g .StringToNumbers (_egced );
+_ggf {if len (_cff ._dbca )< _bedg {_cefa :=_de .NewNotesMaster ();_cff ._dbca =append (_cff ._dbca ,_cefa );_cff ._eddd =append (_cff ._eddd ,_bedg );_effd .AddTarget (_egced ,_cefa ,_facdf ,uint32 (_bedg ));_fdd .TargetAttr =_cf .RelativeFilename (_afgc ,_cagg .Typ ,_facdf ,_bedg );
+};};case _cf .ExtendedPropertiesType :_effd .AddTarget (_egced ,_cff .AppProperties .X (),_facdf ,0);_fdd .TargetAttr =_cf .RelativeFilename (_afgc ,_cagg .Typ ,_facdf ,0);case _cf .SlideType :if _ebfa ,_cfcd :=_g .StringToNumbers (_egced );_cfcd {if len (_cff ._gdf )< _ebfa {_baeg :=_de .NewSld ();
+_cff ._gdf =append (_cff ._gdf ,_baeg );_cff ._deae =append (_cff ._deae ,_ebfa );_effd .AddTarget (_egced ,_baeg ,_facdf ,uint32 (_ebfa ));_fdd .TargetAttr =_cf .RelativeFilename (_afgc ,_cagg .Typ ,_facdf ,_ebfa );_afbc :=_ad .NewRelationships ();_effd .AddTarget (_ba .RelationsPathFor (_egced ),_afbc .X (),_facdf ,0);
+if len (_cff ._gda )>=_ebfa {_cff ._gda [_ebfa -1]=_afbc ;}else {_cff ._gda =append (_cff ._gda ,_afbc );};};};case _cf .SlideMasterType :if _cdgd ,_cggf :=_g .StringToNumbers (_egced );_cggf {if len (_cff ._bbf )< _cdgd {_ccbd :=_de .NewSldMaster ();if !_effd .AddTarget (_egced ,_ccbd ,_facdf ,uint32 (_cdgd )){return nil ;
+};_cff ._bbf =append (_cff ._bbf ,_ccbd );_cff ._bdd =append (_cff ._bdd ,_cdgd );_fdd .TargetAttr =_cf .RelativeFilename (_afgc ,_cagg .Typ ,_facdf ,_cdgd );_dbcc :=_ad .NewRelationships ();_effd .AddTarget (_ba .RelationsPathFor (_egced ),_dbcc .X (),_facdf ,0);
+if len (_cff ._cca )>=_cdgd {_cff ._cca [_cdgd -1]=_dbcc ;}else {_cff ._cca =append (_cff ._cca ,_dbcc );};};};case _cf .SlideLayoutType :if _cfd ,_egdc :=_g .StringToNumbers (_egced );_egdc {_bda :=_de .NewSldLayout ();if !_effd .AddTarget (_egced ,_bda ,_facdf ,uint32 (_cfd )){return nil ;
+};for _ddc :=len (_cff ._bca );_ddc < _cfd ;_ddc ++{_cff ._bca =append (_cff ._bca ,nil );};_cff ._bca [_cfd -1]=_bda ;_fdd .TargetAttr =_cf .RelativeFilename (_afgc ,_cagg .Typ ,_facdf ,_cfd );for _adf :=len (_cff ._dgb );_adf < _cfd ;_adf ++{_cff ._dgb =append (_cff ._dgb ,_ad .NewRelationships ());
+};_bdfe :=_ad .NewRelationships ();_effd .AddTarget (_ba .RelationsPathFor (_egced ),_bdfe .X (),_facdf ,0);_cff ._dgb [_cfd -1]=_bdfe ;};case _cf .ThumbnailType :for _bcgd ,_cccf :=range _bfdg {if _cccf ==nil {continue ;};if _cccf .Name ==_egced {_eadg ,_aee :=_cccf .Open ();
+if _aee !=nil {return _ab .Errorf ("e\u0072\u0072\u006f\u0072\u0020\u0072e\u0061\u0064\u0069\u006e\u0067\u0020\u0074\u0068\u0075m\u0062\u006e\u0061i\u006c:\u0020\u0025\u0073",_aee );};if _cff .Thumbnail ,_ ,_aee =_bae .Decode (_eadg );_aee !=nil {return _ab .Errorf ("\u0065\u0072\u0072\u006fr\u0020\u0064\u0065\u0063\u006f\u0064\u0069\u006e\u0067\u0020t\u0068u\u006d\u0062\u006e\u0061\u0069\u006c\u003a \u0025\u0073",_aee );
+};if _ecbe :=_eadg .Close ();_ecbe !=nil {return _ab .Errorf ("e\u0072\u0072\u006f\u0072\u0020\u0063l\u006f\u0073\u0069\u006e\u0067\u0020\u0074\u0068\u0075m\u0062\u006e\u0061i\u006c:\u0020\u0025\u0073",_ecbe );};_bfdg [_bcgd ]=nil ;};};case _cf .ThemeType :if _ccf ,_ecce :=_g .StringToNumbers (_egced );
+_ecce {if len (_cff ._cbd )< _ccf {_efbe :=_adb .NewTheme ();if !_effd .AddTarget (_egced ,_efbe ,_facdf ,uint32 (_ccf )){return nil ;};_cff ._cbd =append (_cff ._cbd ,_efbe );_cff ._facg =append (_cff ._facg ,_ccf );_fdd .TargetAttr =_cf .RelativeFilename (_afgc ,_cagg .Typ ,_facdf ,_ccf );
+_gcd :=_ad .NewRelationships ();_effd .AddTarget (_ba .RelationsPathFor (_egced ),_gcd .X (),_facdf ,0);if len (_cff ._eca )>=_ccf {_cff ._eca [_ccf -1]=_gcd ;}else {_cff ._eca =append (_cff ._eca ,_gcd );};};};case _cf .ImageType :_egced =_cd .Clean (_egced );
+if _bgc ,_efbee :=_cff ._fdfb [_egced ];_efbee {_fdd .TargetAttr =_bgc ;return nil ;};_gbf :="";for _gagf ,_ggg :=range _bfdg {if _ggg ==nil {continue ;};if _ggg .Name ==_egced {_dccd ,_ccfa :=_ba .ExtractToDiskTmp (_ggg ,_cff .TmpPath );if _ccfa !=nil {return _ccfa ;
+};_bced ,_ccfa :=_ad .ImageFromStorage (_dccd );if _ccfa !=nil {return _ccfa ;};_gbf =_bced .Format ;if _bced .Format =="\u006a\u0070\u0065\u0067"&&_fb .HasSuffix (_egced ,"\u006a\u0070\u0067"){_gbf ="\u006a\u0070\u0067";};_aeca :=_ad .MakeImageRef (_bced ,&_cff .DocBase ,_cff ._cbc );
+_aeca .SetTarget ("\u002e\u002e\u002f"+_egced [4:]);_cff .Images =append (_cff .Images ,_aeca );_bfdg [_gagf ]=nil ;_dda :=len (_cff .Images );if _eafe ,_gdbd :=_g .StringToNumbers (_egced );_gdbd {_dda =_eafe ;};_effd .RecordIndex (_egced ,_dda );break ;
+};};_fbab :=_effd .IndexFor (_egced );_fdd .TargetAttr =_cf .RelativeImageFilename (_afgc ,_cagg .Typ ,_facdf ,_fbab ,_gbf );_cff ._fdfb [_egced ]=_fdd .TargetAttr ;default:_ac .Log .Debug ("\u0075\u006e\u0073\u0075\u0070p\u006f\u0072\u0074\u0065\u0064\u0020\u0072\u0065\u006c\u0061\u0074\u0069\u006fn\u0073\u0068\u0069\u0070\u0020\u0074\u0079\u0070\u0065\u003a\u0020\u0025\u0073\u0020\u0074\u0067\u0074\u003a\u0020\u0025\u0073",_facdf ,_egced );
+};return nil ;};
+
+// GetImageByRelID returns an ImageRef with the associated relation ID in the
+// document.
+func (_dca *Presentation )GetImageByRelID (relID string )(_ad .ImageRef ,bool ){for _ ,_adga :=range _dca .Images {if _adga .RelID ()==relID {return _adga ,true ;};};return _ad .ImageRef {},false ;};
+
+// ExtractText returns text from a slide as a SlideText object.
+func (_edc *Slide )ExtractText ()*SlideText {_abg :=_fd (_edc ._bbgag ,_edc ._deeg .CSld .SpTree .GroupShapeChoice ,[]rectangle {},[]*TextItem {});_gd .Sort (sort2d (_abg ));return &SlideText {Items :_abg };};func (_ecf sort2d )Swap (i ,j int ){_ecf [i ],_ecf [j ]=_ecf [j ],_ecf [i ]};
+
+
+// X returns the inner wrapped XML type.
+func (_ge PresentationProperties )X ()*_de .PresentationPr {return _ge ._dgg };
+
+// ClrMru returns the ClrMru property.
+func (_gdg PresentationProperties )ClrMru ()*_adb .CT_ColorMRU {return _gdg ._dgg .ClrMru };
+
+// AddTextBox adds an empty textbox to a slide.
+func (_fecd Slide )AddTextBox ()TextBox {_ebaa :=_de .NewCT_GroupShapeChoice ();_fecd ._deeg .CSld .SpTree .GroupShapeChoice =append (_fecd ._deeg .CSld .SpTree .GroupShapeChoice ,_ebaa );_dfeg :=_de .NewCT_Shape ();_ebaa .Sp =_dfeg ;_dfeg .SpPr =_adb .NewCT_ShapeProperties ();
+_dfeg .SpPr .Xfrm =_adb .NewCT_Transform2D ();_dfeg .SpPr .GeometryChoice .PrstGeom =_adb .NewCT_PresetGeometry2D ();_dfeg .SpPr .GeometryChoice .PrstGeom .PrstAttr =_adb .ST_ShapeTypeRect ;_dfeg .NvSpPr =_de .NewCT_ShapeNonVisual ();_dfeg .NvSpPr .CNvSpPr =_adb .NewCT_NonVisualDrawingShapeProps ();
+_adba :=true ;_dfeg .NvSpPr .CNvSpPr .TxBoxAttr =&_adba ;_dfeg .TxBody =_adb .NewCT_TextBody ();_dfeg .TxBody .BodyPr =_adb .NewCT_TextBodyProperties ();_dfeg .TxBody .BodyPr .WrapAttr =_adb .ST_TextWrappingTypeSquare ;_dfeg .TxBody .BodyPr .TextAutofitChoice .SpAutoFit =_adb .NewCT_TextShapeAutofit ();
+_acbc :=TextBox {_dfeg };_acbc .Properties ().SetWidth (3*_a .Inch );_acbc .Properties ().SetHeight (1*_a .Inch );_acbc .Properties ().SetPosition (0,0);return _acbc ;};
+
+// HtmlPubPr returns the HtmlPubPr property.
+func (_bfcb PresentationProperties )HtmlPubPr ()*_de .CT_HtmlPublishProperties {return _bfcb ._dgg .HtmlPubPr ;};
 
 // ClearAll completely clears a placeholder. To be useable, at least one
 // paragraph must be added after ClearAll via AddParagraph.
-func (_abe PlaceHolder )ClearAll (){_abe ._daa .SpPr =_ee .NewCT_ShapeProperties ();_abe ._daa .TxBody =_ee .NewCT_TextBody ();_abe ._daa .TxBody .LstStyle =_ee .NewCT_TextListStyle ();};
+func (_gcg PlaceHolder )ClearAll (){_gcg ._abf .SpPr =_adb .NewCT_ShapeProperties ();_gcg ._abf .TxBody =_adb .NewCT_TextBody ();_gcg ._abf .TxBody .LstStyle =_adb .NewCT_TextListStyle ();};
+
+// AddImage adds an image textbox to a slide.
+func (_eed Slide )AddImage (img _ad .ImageRef )Image {_fdfg :=_de .NewCT_GroupShapeChoice ();_eed ._deeg .CSld .SpTree .GroupShapeChoice =append (_eed ._deeg .CSld .SpTree .GroupShapeChoice ,_fdfg );_ecfdf :=_de .NewCT_Picture ();_fdfg .Pic =_ecfdf ;_ecfdf .NvPicPr .CNvPicPr =_adb .NewCT_NonVisualPictureProperties ();
+_ecfdf .NvPicPr .CNvPicPr .PicLocks =_adb .NewCT_PictureLocking ();_ecfdf .NvPicPr .CNvPicPr .PicLocks .NoChangeAspectAttr =_cf .Bool (true );_ecfdf .BlipFill =_adb .NewCT_BlipFillProperties ();_ecfdf .BlipFill .Blip =_adb .NewCT_Blip ();_afd :=_eed .AddImageToRels (img );
+_ecfdf .BlipFill .Blip .EmbedAttr =_cf .String (_afd );_ecfdf .BlipFill .FillModePropertiesChoice .Stretch =_adb .NewCT_StretchInfoProperties ();_ecfdf .BlipFill .FillModePropertiesChoice .Stretch .FillRect =_adb .NewCT_RelativeRect ();_ecfdf .SpPr =_adb .NewCT_ShapeProperties ();
+_ecfdf .SpPr .GeometryChoice .PrstGeom =_adb .NewCT_PresetGeometry2D ();_ecfdf .SpPr .GeometryChoice .PrstGeom .PrstAttr =_adb .ST_ShapeTypeRect ;_agbdb :=Image {_ecfdf };_gfag :=img .Size ();_agbdb .Properties ().SetWidth (_a .Distance (_gfag .X )*_a .Pixel72 );
+_agbdb .Properties ().SetHeight (_a .Distance (_gfag .Y )*_a .Pixel72 );_agbdb .Properties ().SetPosition (0,0);return _agbdb ;};
+
+// Paragraphs returns the paragraphs defined in the placeholder.
+func (_fab PlaceHolder )Paragraphs ()[]_cg .Paragraph {_ccd :=[]_cg .Paragraph {};for _ ,_bb :=range _fab ._abf .TxBody .P {_ccd =append (_ccd ,_cg .MakeParagraph (_bb ));};return _ccd ;};
+
+// X returns the inner wrapped XML type.
+func (_efb *Presentation )X ()*_de .Presentation {return _efb ._dcc };
+
+// MoveSlide moves a slide with given number to position targetPos within a presentation.
+func (_bgdg *Presentation )MoveSlide (slideNumber ,targetPos int )error {if slideNumber < 0||slideNumber >=len (_bgdg ._gdf ){return _fc .New ("\u0073\u006c\u0069\u0064eN\u0075\u006d\u0062\u0065\u0072\u0020\u0069\u0073\u0020\u0069\u006e\u0076\u0061\u006ci\u0064");
+};if targetPos < 0||targetPos >=len (_bgdg ._gdf ){return _fc .New ("t\u0061r\u0067\u0065\u0074\u0050\u006f\u0073\u0020\u0069s\u0020\u0069\u006e\u0076al\u0069\u0064");};if slideNumber ==targetPos {return nil ;};_eaac :=_bgdg ._gdf [slideNumber ];_egcd :=_bgdg ._gda [slideNumber ];
+if slideNumber < targetPos {copy (_bgdg ._gdf [slideNumber :targetPos ],_bgdg ._gdf [slideNumber +1:targetPos +1]);copy (_bgdg ._gda [slideNumber :targetPos ],_bgdg ._gda [slideNumber +1:targetPos +1]);}else {copy (_bgdg ._gdf [targetPos +1:slideNumber +1],_bgdg ._gdf [targetPos :slideNumber ]);
+copy (_bgdg ._gda [targetPos +1:slideNumber +1],_bgdg ._gda [targetPos :slideNumber ]);};_bgdg ._gdf [targetPos ]=_eaac ;_bgdg ._gda [targetPos ]=_egcd ;return nil ;};
+
+// AddParagraph adds a paragraph to the text box
+func (_ceee TextBox )AddParagraph ()_cg .Paragraph {_cgbcd :=_adb .NewCT_TextParagraph ();_ceee ._bbfd .TxBody .P =append (_ceee ._bbfd .TxBody .P ,_cgbcd );return _cg .MakeParagraph (_cgbcd );};func (_abc *Presentation )addLayoutFromSlide (_ebf Slide )error {_agc :=1;
+for _ ,_bcg :=range _abc .Images {if _bcac ,_feg :=_g .StringToNumbers (_bcg .Target ());_feg &&_bcac >=_agc {_agc =_bcac +1;};};_abc ._bca =append (_abc ._bca ,_ebf .GetSlideLayout ());_cbcf :=_ebf .getSlideLayoutRels ();for _ ,_ade :=range _cbcf .X ().Relationship {if _ade .TypeAttr ==_cf .ImageType {_gfbeg ,_dee :=_ebf ._bbgag .GetImageByTarget (_ade .TargetAttr );
+if _dee {if _adgg ,_gage :=_g .StringToNumbers (_gfbeg .Target ());_gage &&_adgg < _agc {_gfbeg .SetTarget (_fb .ReplaceAll (_gfbeg .Target (),_ab .Sprint (_adgg ),_ab .Sprint (_agc )));_ade .TargetAttr =_gfbeg .Target ();_agc =_agc +1;};_abc .Images =append (_abc .Images ,_gfbeg );
+};};};_abc ._dgb =append (_abc ._dgb ,_cbcf );if len (_abc ._bbf )> 0&&len (_abc ._cca )> 0{_fee :=_abc ._cca [0].AddAutoRelationship (_cf .DocTypePresentation ,_cf .SlideMasterType ,len (_abc ._bca ),_cf .SlideLayoutType );_abc ._cca [0].Reorder ();_afbf :=_de .NewCT_SlideLayoutIdListEntry ();
+_afbf .IdAttr =_cf .Uint32 (2147483649);_afbf .RIdAttr =_fee .ID ();for _ ,_ceg :=range _abc ._bbf [0].SldLayoutIdLst .SldLayoutId {if *_ceg .IdAttr >=*_afbf .IdAttr {_afbf .IdAttr =_cf .Uint32 ((*_ceg .IdAttr +2));};};_abc ._bbf [0].SldLayoutIdLst .SldLayoutId =append (_abc ._bbf [0].SldLayoutIdLst .SldLayoutId ,_afbf );
+};_ebac :=_cf .AbsoluteFilename (_cf .DocTypePresentation ,_cf .SlideLayoutType ,len (_abc ._bca ));_abc .ContentTypes .AddOverride (_ebac ,_cf .SlideLayoutContentType );return nil ;};func (_bgfc *Slide )getSlideRels ()_ad .Relationships {_cdfe :=_bgfc ._bbgag ;
+for _abe ,_dgbf :=range _cdfe .Slides (){if *_bgfc ._deeg ==*_dgbf ._deeg {return _cdfe ._gda [_abe ];};};return _ad .Relationships {};};
+
+// AddTable adds an empty table to a slide.
+func (_fcc Slide )AddTable ()*_ad .Table {_cbbd :=_de .NewCT_GroupShapeChoice ();_fcc ._deeg .CSld .SpTree .GroupShapeChoice =append (_fcc ._deeg .CSld .SpTree .GroupShapeChoice ,_cbbd );_eedg :=_de .NewCT_GraphicalObjectFrame ();_cbbd .GraphicFrame =_eedg ;
+_eedg .Xfrm .Off =_adb .NewCT_Point2D ();_aagg :=int64 (1);_eedg .Xfrm .Off .XAttr =_adb .ST_Coordinate {ST_CoordinateUnqualified :&_aagg };_eedg .Xfrm .Off .YAttr =_adb .ST_Coordinate {ST_CoordinateUnqualified :&_aagg };_ccbfe :=_eedg .Graphic .CT_GraphicalObject .GraphicData ;
+_ccbfe .UriAttr ="\u0068\u0074\u0074\u0070\u003a\u002f\u002f\u0073\u0063\u0068\u0065\u006d\u0061\u0073\u002eo\u0070\u0065\u006e\u0078\u006d\u006c\u0066\u006f\u0072\u006d\u0061\u0074\u0073.\u006f\u0072\u0067\u002f\u0064\u0072\u0061\u0077\u0069\u006e\u0067\u006dl/\u0032\u0030\u0030\u0036\u002f\u0074\u0061\u0062\u006c\u0065";
+_ccbb :=_ad .NewTableWithXfrm (_eedg .Xfrm );_ccbfe .Any =append (_ccbfe .Any ,_ccbb .X ());return _ccbb ;};
+
+// ViewProperties contains presentation specific properties.
+type ViewProperties struct{_bcb *_de .ViewPr };
+
+// Text returns text from a presentation as one string separated with line breaks.
+func (_bdc *PresentationText )Text ()string {_efd :=_ff .NewBuffer ([]byte {});for _ ,_dbgd :=range _bdc .Slides {_efd .WriteString (_dbgd .Text ());};return _efd .String ();};
+
+// GetImageByRelID returns an ImageRef with the associated relation ID in the
+// slide.
+func (_bdad *Slide )GetImageByRelID (relID string )(_ad .ImageRef ,bool ){_cecc :=_bdad .getSlideRels ();if (_cecc ==_ad .Relationships {}){return _ad .ImageRef {},false ;};_fbfa :=_cecc .GetTargetByRelId (relID );for _ ,_fbfe :=range _bdad ._bbgag .Images {if _fbfe .Target ()==_fbfa {return _fbfe ,true ;
+};};return _ad .ImageRef {},false ;};
+
+// NewPresentationProperties constructs a new PresentationProperties.
+func NewPresentationProperties ()PresentationProperties {return PresentationProperties {_dgg :_de .NewPresentationPr ()};};
 
 // Width returns slide screen size width in EMU units.
-func (_bfad *SlideScreenSize )Width ()int32 {return _bfad [0]};func (_begd *Slide )ensureClrMap (){if len (_begd ._cbab ._dfd )==0||len (_begd ._cbab ._adfc )==0{return ;};_baee :=_begd ._cbab ._dfd [0];_abaa :=_baee .ClrMap ;if _afee :=_begd ._gddb .ClrMapOvr ;
-_afee !=nil {if _bggf :=_afee .ColorMappingOverrideChoice ;_bggf !=nil {if _bggf .MasterClrMapping ==nil {if _bdee :=_bggf .OverrideClrMapping ;_bdee !=nil {if _bdee .Bg1Attr !=_ee .ST_ColorSchemeIndexUnset {_abaa .Bg1Attr =_bdee .Bg1Attr ;};if _bdee .Tx1Attr !=_ee .ST_ColorSchemeIndexUnset {_abaa .Tx1Attr =_bdee .Tx1Attr ;
-};if _bdee .Bg2Attr !=_ee .ST_ColorSchemeIndexUnset {_abaa .Bg2Attr =_bdee .Bg2Attr ;};if _bdee .Tx2Attr !=_ee .ST_ColorSchemeIndexUnset {_abaa .Tx2Attr =_bdee .Tx2Attr ;};if _bdee .Accent1Attr !=_ee .ST_ColorSchemeIndexUnset {_abaa .Accent1Attr =_bdee .Accent1Attr ;
-};if _bdee .Accent2Attr !=_ee .ST_ColorSchemeIndexUnset {_abaa .Accent2Attr =_bdee .Accent2Attr ;};if _bdee .Accent3Attr !=_ee .ST_ColorSchemeIndexUnset {_abaa .Accent3Attr =_bdee .Accent3Attr ;};if _bdee .Accent4Attr !=_ee .ST_ColorSchemeIndexUnset {_abaa .Accent4Attr =_bdee .Accent4Attr ;
-};if _bdee .Accent5Attr !=_ee .ST_ColorSchemeIndexUnset {_abaa .Accent5Attr =_bdee .Accent5Attr ;};if _bdee .Accent6Attr !=_ee .ST_ColorSchemeIndexUnset {_abaa .Accent6Attr =_bdee .Accent6Attr ;};if _bdee .HlinkAttr !=_ee .ST_ColorSchemeIndexUnset {_abaa .HlinkAttr =_bdee .HlinkAttr ;
-};if _bdee .FolHlinkAttr !=_ee .ST_ColorSchemeIndexUnset {_abaa .FolHlinkAttr =_bdee .FolHlinkAttr ;};};};};};_begd ._daea =_abaa ;};func (_af *chart )Target ()string {return _af ._aba };
+func (_dbge *SlideScreenSize )Width ()int32 {return _dbge [0]};
 
-// SetTextAnchor controls the text anchoring
-func (_fged TextBox )SetTextAnchor (a _ee .ST_TextAnchoringType ){_fged ._bcfg .TxBody .BodyPr =_ee .NewCT_TextBodyProperties ();_fged ._bcfg .TxBody .BodyPr .AnchorAttr =a ;};
+// Close closes the presentation, removing any temporary files that might have been
+// created when opening a document.
+func (_fec *Presentation )Close ()error {if _fec .TmpPath !=""{return _db .RemoveAll (_fec .TmpPath );};return nil ;};
 
-// SetWidth sets width of slide screen size with given value in EMU units.
-func (_ffbe *SlideScreenSize )SetWidth (val int32 ){_ffbe [0]=val };
+// Save writes the presentation out to a writer in the Zip package format
+func (_cec *Presentation )Save (w _e .Writer )error {return _cec .save (w ,false )};
+
+// Index returns the placeholder index
+func (_cee PlaceHolder )Index ()uint32 {if _cee ._abf .NvSpPr .NvPr .Ph .IdxAttr ==nil {return 0;};return *_cee ._abf .NvSpPr .NvPr .Ph .IdxAttr ;};
+
+// ShowPr returns the ShowPr property.
+func (_cef PresentationProperties )ShowPr ()*_de .CT_ShowProperties {return _cef ._dgg .ShowPr };
+
+// GetColorBySchemeColor returns *dml.CT_Color mapped to scheme colors like dk1, lt1 etc. depending on what theme is used in the presentation.
+func (_efbg *Presentation )GetColorBySchemeColor (schClr _adb .ST_SchemeColorVal )*_adb .CT_Color {if len (_efbg ._bbf )==0||len (_efbg ._cbd )==0{return nil ;};var _dgbg _adb .ST_ColorSchemeIndex ;_gbag :=_efbg ._bbf [0];_aba :=_gbag .ClrMap ;switch schClr .String (){case "\u0062\u0067\u0031":_dgbg =_aba .Bg1Attr ;
+case "\u0062\u0067\u0032":_dgbg =_aba .Bg2Attr ;case "\u0074\u0078\u0031":_dgbg =_aba .Tx1Attr ;case "\u0074\u0078\u0032":_dgbg =_aba .Tx2Attr ;case "\u0061c\u0063\u0065\u006e\u0074\u0031":_dgbg =_aba .Accent1Attr ;case "\u0061c\u0063\u0065\u006e\u0074\u0032":_dgbg =_aba .Accent2Attr ;
+case "\u0061c\u0063\u0065\u006e\u0074\u0033":_dgbg =_aba .Accent3Attr ;case "\u0061c\u0063\u0065\u006e\u0074\u0034":_dgbg =_aba .Accent4Attr ;case "\u0061c\u0063\u0065\u006e\u0074\u0035":_dgbg =_aba .Accent5Attr ;case "\u0061c\u0063\u0065\u006e\u0074\u0036":_dgbg =_aba .Accent6Attr ;
+case "\u0068\u006c\u0069n\u006b":_dgbg =_aba .HlinkAttr ;case "\u0066\u006f\u006c\u0048\u006c\u0069\u006e\u006b":_dgbg =_aba .FolHlinkAttr ;case "\u0064\u006b\u0031":_dgbg =_adb .ST_ColorSchemeIndexDk1 ;case "\u0064\u006b\u0032":_dgbg =_adb .ST_ColorSchemeIndexDk2 ;
+case "\u006c\u0074\u0031":_dgbg =_adb .ST_ColorSchemeIndexLt1 ;case "\u006c\u0074\u0032":_dgbg =_adb .ST_ColorSchemeIndexLt2 ;default:_dgbg =_adb .ST_ColorSchemeIndexUnset ;};_agg :=_efbg ._cbd [0];_abcgf :=_agg .ThemeElements ;if _abcgf ==nil {return nil ;
+};var _bdg *_adb .CT_Color ;_gaa :=_abcgf .ClrScheme ;switch _dgbg .String (){case "\u0064\u006b\u0031":_bdg =_gaa .Dk1 ;case "\u0064\u006b\u0032":_bdg =_gaa .Dk2 ;case "\u006c\u0074\u0031":_bdg =_gaa .Lt1 ;case "\u006c\u0074\u0032":_bdg =_gaa .Lt2 ;case "\u0061c\u0063\u0065\u006e\u0074\u0031":_bdg =_gaa .Accent1 ;
+case "\u0061c\u0063\u0065\u006e\u0074\u0032":_bdg =_gaa .Accent2 ;case "\u0061c\u0063\u0065\u006e\u0074\u0033":_bdg =_gaa .Accent3 ;case "\u0061c\u0063\u0065\u006e\u0074\u0034":_bdg =_gaa .Accent4 ;case "\u0061c\u0063\u0065\u006e\u0074\u0035":_bdg =_gaa .Accent5 ;
+case "\u0061c\u0063\u0065\u006e\u0074\u0036":_bdg =_gaa .Accent6 ;case "\u0068\u006c\u0069n\u006b":_bdg =_gaa .Hlink ;case "\u0066\u006f\u006c\u0048\u006c\u0069\u006e\u006b":_bdg =_gaa .FolHlink ;default:return nil ;};return _bdg ;};
+
+// Name returns the name of the slide layout.
+func (_ceca SlideLayout )Name ()string {if _ceca ._gcee .CSld !=nil &&_ceca ._gcee .CSld .NameAttr !=nil {return *_ceca ._gcee .CSld .NameAttr ;};return "";};const _ead float64 =500000;
+
+// SetSize sets the slide size, take argument of SlideScreenSize.
+func (_dcea *SlideSize )SetSize (sz SlideScreenSize ){_dcea ._bdb .CxAttr =sz [0];_dcea ._bdb .CyAttr =sz [1];};
+
+// AddImageToRels adds an image relationship to a slide without putting image on the slide.
+func (_gggg Slide )AddImageToRels (img _ad .ImageRef )string {_eddg :=0;for _bcd ,_dfaa :=range _gggg ._bbgag .Images {if _dfaa ==img {_eddg =_bcd +1;break ;};};var _bee string ;for _fad ,_fded :=range _gggg ._bbgag .Slides (){if _fded ._deeg ==_gggg ._deeg {_defc :=_ab .Sprintf ("\u002e\u002e\u002f\u006ded\u0069\u0061\u002f\u0069\u006d\u0061\u0067\u0065\u0025\u0064\u002e\u0025\u0073",_eddg ,img .Format ());
+_afdb :=_gggg ._bbgag ._gda [_fad ].AddRelationship (_defc ,_cf .ImageType );_bee =_afdb .ID ();};};return _bee ;};func (_bgd *Presentation )saveToFile (_cdce string ,_fbfcg bool )error {_aceb ,_faa :=_ga .Create (_cdce );if _faa !=nil {return _faa ;};
+defer func (){_dge :=_aceb .Close ();if _dge !=nil {_ac .Log .Error ("\u0045R\u0052\u004f\u0052\u003a\u0020\u0025v",_dge );};}();return _bgd .save (_aceb ,_fbfcg );};
+
+// GetSlideLayout returns a slide layout related to the slide.
+func (_dcfd *Slide )GetSlideLayout ()*_de .SldLayout {_cbga :=_dcfd .getSlideRels ();for _ ,_dagc :=range _cbga .Relationships (){if _dagc .Type ()==_cf .SlideLayoutType {if _aga ,_cebd :=_g .StringToNumbers (_dagc .Target ());_cebd {return _dcfd ._bbgag ._bca [_aga -1];
+};return nil ;};};return nil ;};
+
+// GetLayoutByName retrieves a slide layout given a layout name.
+func (_cgec *Presentation )GetLayoutByName (name string )(SlideLayout ,error ){for _ ,_dgbe :=range _cgec ._bca {if _dgbe .CSld .NameAttr !=nil &&name ==*_dgbe .CSld .NameAttr {return SlideLayout {_dgbe },nil ;};};return SlideLayout {},_fc .New ("\u0075\u006eab\u006c\u0065\u0020t\u006f\u0020\u0066\u0069nd \u006cay\u006f\u0075\u0074\u0020\u0077\u0069\u0074h \u0074\u0068\u0061\u0074\u0020\u006e\u0061m\u0065");
+};
+
+// SaveToFile writes the Presentation out to a file.
+func (_gbd *Presentation )SaveToFile (path string )error {return _gbd .saveToFile (path ,false )};
+
+// OutlineViewPr returns the OutlineViewPr property.
+func (_agfd ViewProperties )OutlineViewPr ()*_de .CT_OutlineViewProperties {return _agfd ._bcb .OutlineViewPr ;};func (_bbb *Slide )ensureClrMap (){if len (_bbb ._bbgag ._bbf )==0||len (_bbb ._bbgag ._cbd )==0{return ;};_cgeb :=_bbb ._bbgag ._bbf [0];_aeea :=_cgeb .ClrMap ;
+if _dgdc :=_bbb ._deeg .ClrMapOvr ;_dgdc !=nil {if _cbbf :=_dgdc .ColorMappingOverrideChoice ;_cbbf !=nil {if _cbbf .MasterClrMapping ==nil {if _fddf :=_cbbf .OverrideClrMapping ;_fddf !=nil {if _fddf .Bg1Attr !=_adb .ST_ColorSchemeIndexUnset {_aeea .Bg1Attr =_fddf .Bg1Attr ;
+};if _fddf .Tx1Attr !=_adb .ST_ColorSchemeIndexUnset {_aeea .Tx1Attr =_fddf .Tx1Attr ;};if _fddf .Bg2Attr !=_adb .ST_ColorSchemeIndexUnset {_aeea .Bg2Attr =_fddf .Bg2Attr ;};if _fddf .Tx2Attr !=_adb .ST_ColorSchemeIndexUnset {_aeea .Tx2Attr =_fddf .Tx2Attr ;
+};if _fddf .Accent1Attr !=_adb .ST_ColorSchemeIndexUnset {_aeea .Accent1Attr =_fddf .Accent1Attr ;};if _fddf .Accent2Attr !=_adb .ST_ColorSchemeIndexUnset {_aeea .Accent2Attr =_fddf .Accent2Attr ;};if _fddf .Accent3Attr !=_adb .ST_ColorSchemeIndexUnset {_aeea .Accent3Attr =_fddf .Accent3Attr ;
+};if _fddf .Accent4Attr !=_adb .ST_ColorSchemeIndexUnset {_aeea .Accent4Attr =_fddf .Accent4Attr ;};if _fddf .Accent5Attr !=_adb .ST_ColorSchemeIndexUnset {_aeea .Accent5Attr =_fddf .Accent5Attr ;};if _fddf .Accent6Attr !=_adb .ST_ColorSchemeIndexUnset {_aeea .Accent6Attr =_fddf .Accent6Attr ;
+};if _fddf .HlinkAttr !=_adb .ST_ColorSchemeIndexUnset {_aeea .HlinkAttr =_fddf .HlinkAttr ;};if _fddf .FolHlinkAttr !=_adb .ST_ColorSchemeIndexUnset {_aeea .FolHlinkAttr =_fddf .FolHlinkAttr ;};};};};};_bbb ._ggfa =_aeea ;};
+
+// WebPr returns the WebPr property.
+func (_bed PresentationProperties )WebPr ()*_de .CT_WebProperties {return _bed ._dgg .WebPr };
+
+// Remove removes a placeholder from a presentation.
+func (_acd PlaceHolder )Remove ()error {for _aed ,_dafd :=range _acd ._fbd .CSld .SpTree .GroupShapeChoice {if _dafd .Sp !=nil &&_dafd .Sp ==_acd ._abf {copy (_acd ._fbd .CSld .SpTree .GroupShapeChoice [_aed :],_acd ._fbd .CSld .SpTree .GroupShapeChoice [_aed +1:]);
+_acd ._fbd .CSld .SpTree .GroupShapeChoice =_acd ._fbd .CSld .SpTree .GroupShapeChoice [0:len (_acd ._fbd .CSld .SpTree .GroupShapeChoice )-1];return nil ;};};return _fc .New ("\u0070\u006c\u0061\u0063\u0065\u0068\u006f\u006c\u0064\u0065r\u0020\u006e\u006f\u0074\u0020\u0066\u006fu\u006e\u0064\u0020\u0069\u006e\u0020\u0073\u006c\u0069\u0064\u0065");
+};
+
+// PresentationText is an array of extracted text items which has some methods for representing extracted text.
+type PresentationText struct{Slides []*SlideText ;};
+
+// PrnPr returns the PrnPr property.
+func (_ecc PresentationProperties )PrnPr ()*_de .CT_PrintProperties {return _ecc ._dgg .PrnPr };func (_cgg *Presentation )nextSlideID ()uint32 {_ddf :=uint32 (256);for _ ,_ecd :=range _cgg ._dcc .SldIdLst .SldId {if _ecd .IdAttr >=_ddf {_ddf =_ecd .IdAttr +1;
+};};return _ddf ;};
+
+// SetHeight sets height of slide screen size with given value in EMU units.
+func (_facf *SlideScreenSize )SetHeight (val int32 ){_facf [1]=val };
+
+// AddSlide adds a new slide to the presentation.
+func (_gdge *Presentation )AddSlide ()Slide {_bfe :=_de .NewCT_SlideIdListEntry ();_bfe .IdAttr =_gdge .nextSlideID ();_gdge ._dcc .SldIdLst .SldId =append (_gdge ._dcc .SldIdLst .SldId ,_bfe );_gad :=_de .NewSld ();_gad .CSld .SpTree .NvGrpSpPr .CNvPr .IdAttr =1;
+_gad .CSld .SpTree .GrpSpPr .Xfrm =_adb .NewCT_GroupTransform2D ();_gad .CSld .SpTree .GrpSpPr .Xfrm .Off =_adb .NewCT_Point2D ();_gad .CSld .SpTree .GrpSpPr .Xfrm .Off .XAttr .ST_CoordinateUnqualified =_cf .Int64 (0);_gad .CSld .SpTree .GrpSpPr .Xfrm .Off .YAttr .ST_CoordinateUnqualified =_cf .Int64 (0);
+_gad .CSld .SpTree .GrpSpPr .Xfrm .Ext =_adb .NewCT_PositiveSize2D ();_gad .CSld .SpTree .GrpSpPr .Xfrm .Ext .CxAttr =int64 (0*_a .Point );_gad .CSld .SpTree .GrpSpPr .Xfrm .Ext .CyAttr =int64 (0*_a .Point );_gad .CSld .SpTree .GrpSpPr .Xfrm .ChOff =_gad .CSld .SpTree .GrpSpPr .Xfrm .Off ;
+_gad .CSld .SpTree .GrpSpPr .Xfrm .ChExt =_gad .CSld .SpTree .GrpSpPr .Xfrm .Ext ;_gdge ._gdf =append (_gdge ._gdf ,_gad );_gdge ._deae =append (_gdge ._deae ,len (_gdge ._gdf ));_bcag :=_gdge ._cbc .AddAutoRelationship (_cf .DocTypePresentation ,_cf .OfficeDocumentType ,len (_gdge ._gdf ),_cf .SlideType );
+_bfe .RIdAttr =_bcag .ID ();_ccaf :=_cf .AbsoluteFilename (_cf .DocTypePresentation ,_cf .SlideType ,len (_gdge ._gdf ));_gdge .ContentTypes .AddOverride (_ccaf ,_cf .SlideContentType );_eac :=_ad .NewRelationships ();_gdge ._gda =append (_gdge ._gda ,_eac );
+_eac .AddAutoRelationship (_cf .DocTypePresentation ,_cf .SlideType ,len (_gdge ._bca ),_cf .SlideLayoutType );return Slide {_bfe ,_gad ,_gdge ,nil };};
+
+// Slide represents a slide of a presentation.
+type Slide struct{_bea *_de .CT_SlideIdListEntry ;_deeg *_de .Sld ;_bbgag *Presentation ;_ggfa *_adb .CT_ColorMapping ;};func (_bcgc *Presentation )Validate ()error {if _gbdf :=_bcgc ._dcc .Validate ();_gbdf !=nil {return _gbdf ;};for _cdad ,_gbed :=range _bcgc .Slides (){if _bgfe :=_gbed .ValidateWithPath (_ab .Sprintf ("\u0053l\u0069\u0064\u0065\u005b\u0025\u0064]",_cdad ));
+_bgfe !=nil {return _bgfe ;};};for _cdf ,_dddc :=range _bcgc ._bbf {if _efbcf :=_dddc .ValidateWithPath (_ab .Sprintf ("\u0053l\u0069d\u0065\u004d\u0061\u0073\u0074\u0065\u0072\u005b\u0025\u0064\u005d",_cdf ));_efbcf !=nil {return _efbcf ;};};for _egaf ,_fffc :=range _bcgc ._bca {if _bad :=_fffc .ValidateWithPath (_ab .Sprintf ("\u0053l\u0069d\u0065\u004c\u0061\u0079\u006f\u0075\u0074\u005b\u0025\u0064\u005d",_egaf ));
+_bad !=nil {return _bad ;};};return nil ;};
+
+// Height returns slide screen size height in EMU units.
+func (_becgf *SlideScreenSize )Height ()int32 {return _becgf [1]};func (_baf sort2d )Len ()int {return len (_baf )};
+
+// Type returns the type of the slide layout.
+func (_cbed SlideLayout )Type ()_de .ST_SlideLayoutType {return _cbed ._gcee .TypeAttr };
+
+// NotesViewPr returns the NotesViewPr property.
+func (_ebef ViewProperties )NotesViewPr ()*_de .CT_NotesViewProperties {return _ebef ._bcb .NotesViewPr };
+
+// X returns the inner wrapped XML type.
+func (_fgfa ViewProperties )X ()*_de .ViewPr {return _fgfa ._bcb };type sort2d []*TextItem ;
+
+// New initializes and returns a new presentation
+func New ()*Presentation {_beg :=_fae ();_beg .ContentTypes .AddOverride ("/\u0070\u0070\u0074\u002fpr\u0065s\u0065\u006e\u0074\u0061\u0074i\u006f\u006e\u002e\u0078\u006d\u006c","\u0061\u0070\u0070\u006c\u0069\u0063\u0061t\u0069\u006f\u006e\u002f\u0076\u006e\u0064\u002e\u006f\u0070\u0065\u006e\u0078\u006d\u006c\u0066\u006f\u0072m\u0061\u0074\u0073\u002d\u006ff\u0066\u0069\u0063\u0065\u0064\u006f\u0063\u0075\u006de\u006e\u0074\u002e\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061\u0074\u0069\u006f\u006e\u006d\u006c\u002e\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061\u0074\u0069\u006f\u006e\u002e\u006d\u0061\u0069\u006e\u002b\u0078\u006d\u006c");
+_beg .ContentTypes .AddOverride ("\u0070\u0070\u0074\u002f\u0070\u0072\u0065\u0073\u0050\u0072\u006f\u0070s\u002e\u0078\u006d\u006c","\u0061\u0070\u0070\u006c\u0069c\u0061\u0074\u0069\u006f\u006e\u002fv\u006e\u0064\u002e\u006f\u0070\u0065\u006ex\u006d\u006c\u0066o\u0072\u006d\u0061\u0074s\u002d\u006f\u0066\u0066\u0069\u0063e\u0064\u006f\u0063\u0075\u006d\u0065\u006e\u0074\u002e\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061t\u0069\u006f\u006e\u006d\u006c\u002e\u0070\u0072\u0065\u0073\u0050\u0072\u006f\u0070\u0073\u002b\u0078\u006d\u006c");
+_beg .ContentTypes .AddOverride ("\u0070\u0070\u0074\u002f\u0076\u0069\u0065\u0077\u0050\u0072\u006f\u0070s\u002e\u0078\u006d\u006c","\u0061\u0070\u0070\u006c\u0069c\u0061\u0074\u0069\u006f\u006e\u002fv\u006e\u0064\u002e\u006f\u0070\u0065\u006ex\u006d\u006c\u0066o\u0072\u006d\u0061\u0074s\u002d\u006f\u0066\u0066\u0069\u0063e\u0064\u006f\u0063\u0075\u006d\u0065\u006e\u0074\u002e\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061t\u0069\u006f\u006e\u006d\u006c\u002e\u0076\u0069\u0065\u0077\u0050\u0072\u006f\u0070\u0073\u002b\u0078\u006d\u006c");
+_beg .ContentTypes .AddOverride ("\u0070\u0070\u0074\u002fta\u0062\u006c\u0065\u0053\u0074\u0079\u006c\u0065\u0073\u002e\u0078\u006d\u006c","\u0061\u0070\u0070\u006c\u0069c\u0061\u0074\u0069\u006f\u006e\u002f\u0076n\u0064\u002e\u006f\u0070\u0065\u006e\u0078\u006d\u006c\u0066\u006f\u0072\u006d\u0061\u0074\u0073\u002d\u006f\u0066\u0066\u0069\u0063\u0065\u0064\u006f\u0063\u0075\u006d\u0065\u006e\u0074\u002e\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061t\u0069\u006f\u006e\u006d\u006c\u002e\u0074\u0061\u0062\u006c\u0065\u0053t\u0079\u006c\u0065\u0073\u002b\u0078m\u006c");
+_beg .Rels .AddRelationship ("\u0064\u006f\u0063\u0050\u0072\u006f\u0070\u0073\u002f\u0063\u006f\u0072e\u002e\u0078\u006d\u006c","\u0068\u0074\u0074\u0070\u003a\u002f\u002f\u0073\u0063\u0068\u0065\u006d\u0061s\u002e\u006f\u0070\u0065\u006e\u0078\u006d\u006c\u0066o\u0072\u006d\u0061\u0074\u0073\u002e\u006f\u0072\u0067\u002f\u0070\u0061\u0063\u006ba\u0067\u0065\u002f\u0032\u0030\u0030\u0036\u002f\u0072\u0065\u006c\u0061\u0074\u0069\u006f\u006e\u0073\u0068\u0069\u0070\u0073\u002f\u006d\u0065\u0074\u0061\u0064\u0061\u0074\u0061/\u0063\u006f\u0072\u0065\u002d\u0070\u0072\u006f\u0070e\u0072\u0074i\u0065\u0073");
+_beg .Rels .AddRelationship ("\u0064\u006fc\u0050\u0072\u006fp\u0073\u002f\u0061\u0070\u0070\u002e\u0078\u006d\u006c","\u0068t\u0074\u0070\u003a\u002f\u002f\u0073\u0063\u0068\u0065\u006d\u0061\u0073\u002eo\u0070\u0065\u006ex\u006d\u006c\u0066\u006f\u0072\u006da\u0074\u0073.\u006f\u0072\u0067\u002f\u006f\u0066\u0066\u0069\u0063\u0065\u0044\u006f\u0063\u0075\u006d\u0065\u006e\u0074\u002f\u0032\u0030\u0030\u0036\u002f\u0072\u0065\u006c\u0061\u0074i\u006f\u006e\u0073\u0068\u0069p\u0073\u002f\u0065x\u0074\u0065\u006e\u0064\u0065d\u002d\u0070\u0072\u006f\u0070\u0065\u0072\u0074\u0069\u0065\u0073");
+_beg .Rels .AddRelationship ("p\u0070t\u002f\u0070\u0072\u0065\u0073\u0065\u006e\u0074a\u0074\u0069\u006f\u006e.x\u006d\u006c","\u0068\u0074\u0074\u0070\u003a\u002f\u002fs\u0063\u0068\u0065\u006d\u0061\u0073\u002e\u006f\u0070\u0065\u006e\u0078\u006d\u006c\u0066\u006f\u0072\u006da\u0074\u0073\u002e\u006f\u0072g\u002f\u006f\u0066\u0066\u0069\u0063\u0065\u0044\u006fc\u0075\u006d\u0065\u006e\u0074\u002f\u0032\u0030\u0030\u0036\u002f\u0072\u0065\u006c\u0061\u0074\u0069\u006f\u006e\u0073\u0068\u0069\u0070\u0073\u002f\u006f\u0066\u0066\u0069\u0063\u0065\u0044\u006f\u0063\u0075\u006d\u0065\u006e\u0074");
+_beg ._dcc .SldMasterIdLst =_de .NewCT_SlideMasterIdList ();_cfg :=_de .NewSldMaster ();_cfg .ClrMap .Bg1Attr =_adb .ST_ColorSchemeIndexLt1 ;_cfg .ClrMap .Bg2Attr =_adb .ST_ColorSchemeIndexLt2 ;_cfg .ClrMap .Tx1Attr =_adb .ST_ColorSchemeIndexDk1 ;_cfg .ClrMap .Tx2Attr =_adb .ST_ColorSchemeIndexDk2 ;
+_cfg .ClrMap .Accent1Attr =_adb .ST_ColorSchemeIndexAccent1 ;_cfg .ClrMap .Accent2Attr =_adb .ST_ColorSchemeIndexAccent2 ;_cfg .ClrMap .Accent3Attr =_adb .ST_ColorSchemeIndexAccent3 ;_cfg .ClrMap .Accent4Attr =_adb .ST_ColorSchemeIndexAccent4 ;_cfg .ClrMap .Accent5Attr =_adb .ST_ColorSchemeIndexAccent5 ;
+_cfg .ClrMap .Accent6Attr =_adb .ST_ColorSchemeIndexAccent6 ;_cfg .ClrMap .HlinkAttr =_adb .ST_ColorSchemeIndexHlink ;_cfg .ClrMap .FolHlinkAttr =_adb .ST_ColorSchemeIndexFolHlink ;_beg ._bbf =append (_beg ._bbf ,_cfg );_beg ._bdd =append (_beg ._bdd ,len (_beg ._bbf ));
+_fbe :=_cf .AbsoluteFilename (_cf .DocTypePresentation ,_cf .SlideMasterType ,1);_beg .ContentTypes .AddOverride (_fbe ,_cf .SlideMasterContentType );_eag :=_beg ._cbc .AddAutoRelationship (_cf .DocTypePresentation ,_cf .OfficeDocumentType ,1,_cf .SlideMasterType );
+_dcd :=_de .NewCT_SlideMasterIdListEntry ();_dcd .IdAttr =_cf .Uint32 (2147483648);_dcd .RIdAttr =_eag .ID ();_beg ._dcc .SldMasterIdLst .SldMasterId =append (_beg ._dcc .SldMasterIdLst .SldMasterId ,_dcd );_gdcg :=_ad .NewRelationships ();_beg ._cca =append (_beg ._cca ,_gdcg );
+_fcfg :=_de .NewSldLayout ();_fdc :=_gdcg .AddAutoRelationship (_cf .DocTypePresentation ,_cf .SlideMasterType ,1,_cf .SlideLayoutType );_bcaf :=_cf .AbsoluteFilename (_cf .DocTypePresentation ,_cf .SlideLayoutType ,1);_beg .ContentTypes .AddOverride (_bcaf ,_cf .SlideLayoutContentType );
+_gdcg .AddAutoRelationship (_cf .DocTypePresentation ,_cf .SlideMasterType ,1,_cf .ThemeType );_beg ._bca =append (_beg ._bca ,_fcfg );_cfg .SldLayoutIdLst =_de .NewCT_SlideLayoutIdList ();_egce :=_de .NewCT_SlideLayoutIdListEntry ();_egce .IdAttr =_cf .Uint32 (2147483649);
+_egce .RIdAttr =_fdc .ID ();_cfg .SldLayoutIdLst .SldLayoutId =append (_cfg .SldLayoutIdLst .SldLayoutId ,_egce );_gga :=_ad .NewRelationships ();_beg ._dgb =append (_beg ._dgb ,_gga );_gga .AddAutoRelationship (_cf .DocTypePresentation ,_cf .SlideType ,1,_cf .SlideMasterType );
+_beg ._dcc .NotesSz .CxAttr =6858000;_beg ._dcc .NotesSz .CyAttr =9144000;_deg :=_adb .NewTheme ();_deg .NameAttr =_cf .String ("\u0075n\u0069o\u0066\u0066\u0069\u0063\u0065\u0020\u0054\u0068\u0065\u006d\u0065");_deg .ThemeElements .ClrScheme .NameAttr ="\u004f\u0066\u0066\u0069\u0063\u0065";
+_deg .ThemeElements .ClrScheme .Dk1 .SysClr =_adb .NewCT_SystemColor ();_deg .ThemeElements .ClrScheme .Dk1 .SysClr .LastClrAttr =_cf .String ("\u0030\u0030\u0030\u0030\u0030\u0030");_deg .ThemeElements .ClrScheme .Dk1 .SysClr .ValAttr =_adb .ST_SystemColorValWindowText ;
+_deg .ThemeElements .ClrScheme .Lt1 .SysClr =_adb .NewCT_SystemColor ();_deg .ThemeElements .ClrScheme .Lt1 .SysClr .LastClrAttr =_cf .String ("\u0066\u0066\u0066\u0066\u0066\u0066");_deg .ThemeElements .ClrScheme .Lt1 .SysClr .ValAttr =_adb .ST_SystemColorValWindow ;
+_deg .ThemeElements .ClrScheme .Dk2 .SrgbClr =_adb .NewCT_SRgbColor ();_deg .ThemeElements .ClrScheme .Dk2 .SrgbClr .ValAttr ="\u0034\u0034\u0035\u0034\u0036\u0061";_deg .ThemeElements .ClrScheme .Lt2 .SrgbClr =_adb .NewCT_SRgbColor ();_deg .ThemeElements .ClrScheme .Lt2 .SrgbClr .ValAttr ="\u0065\u0037\u0065\u0037\u0065\u0036";
+_deg .ThemeElements .ClrScheme .Accent1 .SrgbClr =_adb .NewCT_SRgbColor ();_deg .ThemeElements .ClrScheme .Accent1 .SrgbClr .ValAttr ="\u0034\u0034\u0037\u0032\u0063\u0034";_deg .ThemeElements .ClrScheme .Accent2 .SrgbClr =_adb .NewCT_SRgbColor ();_deg .ThemeElements .ClrScheme .Accent2 .SrgbClr .ValAttr ="\u0065\u0064\u0037\u0064\u0033\u0031";
+_deg .ThemeElements .ClrScheme .Accent3 .SrgbClr =_adb .NewCT_SRgbColor ();_deg .ThemeElements .ClrScheme .Accent3 .SrgbClr .ValAttr ="\u0061\u0035\u0061\u0035\u0061\u0035";_deg .ThemeElements .ClrScheme .Accent4 .SrgbClr =_adb .NewCT_SRgbColor ();_deg .ThemeElements .ClrScheme .Accent4 .SrgbClr .ValAttr ="\u0066\u0066\u0063\u0030\u0030\u0030";
+_deg .ThemeElements .ClrScheme .Accent5 .SrgbClr =_adb .NewCT_SRgbColor ();_deg .ThemeElements .ClrScheme .Accent5 .SrgbClr .ValAttr ="\u0035\u0062\u0039\u0062\u0064\u0035";_deg .ThemeElements .ClrScheme .Accent6 .SrgbClr =_adb .NewCT_SRgbColor ();_deg .ThemeElements .ClrScheme .Accent6 .SrgbClr .ValAttr ="\u0037\u0030\u0061\u0064\u0034\u0037";
+_deg .ThemeElements .ClrScheme .Hlink .SrgbClr =_adb .NewCT_SRgbColor ();_deg .ThemeElements .ClrScheme .Hlink .SrgbClr .ValAttr ="\u0030\u0035\u0036\u0033\u0063\u0031";_deg .ThemeElements .ClrScheme .FolHlink .SrgbClr =_adb .NewCT_SRgbColor ();_deg .ThemeElements .ClrScheme .FolHlink .SrgbClr .ValAttr ="\u0039\u0035\u0034\u0066\u0037\u0032";
+_deg .ThemeElements .FontScheme .NameAttr ="\u004f\u0066\u0066\u0069\u0063\u0065";_deg .ThemeElements .FontScheme .MajorFont .Latin .TypefaceAttr ="\u0043\u0061\u006c\u0069\u0062\u0072\u0069\u0020\u004c\u0069\u0067\u0068\u0074";_deg .ThemeElements .FontScheme .MinorFont .Latin .TypefaceAttr ="\u0043a\u006c\u0069\u0062\u0072\u0069";
+_deg .ThemeElements .FmtScheme .NameAttr =_cf .String ("\u004f\u0066\u0066\u0069\u0063\u0065");_cefc :=_adb .NewEG_FillProperties ();_deg .ThemeElements .FmtScheme .FillStyleLst .EG_FillProperties =append (_deg .ThemeElements .FmtScheme .FillStyleLst .EG_FillProperties ,_cefc );
+_cefc .FillPropertiesChoice .SolidFill =&_adb .CT_SolidColorFillProperties {SchemeClr :&_adb .CT_SchemeColor {ValAttr :_adb .ST_SchemeColorValPhClr }};_cefc =_adb .NewEG_FillProperties ();_deg .ThemeElements .FmtScheme .FillStyleLst .EG_FillProperties =append (_deg .ThemeElements .FmtScheme .FillStyleLst .EG_FillProperties ,_cefc );
+_deg .ThemeElements .FmtScheme .FillStyleLst .EG_FillProperties =append (_deg .ThemeElements .FmtScheme .FillStyleLst .EG_FillProperties ,_cefc );_cefc .FillPropertiesChoice .GradFill =&_adb .CT_GradientFillProperties {RotWithShapeAttr :_cf .Bool (true ),GsLst :&_adb .CT_GradientStopList {},ShadePropertiesChoice :&_adb .EG_ShadePropertiesChoice {Lin :&_adb .CT_LinearShadeProperties {}}};
+_cefc .FillPropertiesChoice .GradFill .ShadePropertiesChoice .Lin .AngAttr =_cf .Int32 (5400000);_cefc .FillPropertiesChoice .GradFill .ShadePropertiesChoice .Lin .ScaledAttr =_cf .Bool (false );_becb :=_adb .NewCT_GradientStop ();_becb .PosAttr .ST_PositiveFixedPercentageDecimal =_cf .Int32 (0);
+_becb .SchemeClr =&_adb .CT_SchemeColor {ValAttr :_adb .ST_SchemeColorValPhClr };_cefc .FillPropertiesChoice .GradFill .GsLst .Gs =append (_cefc .FillPropertiesChoice .GradFill .GsLst .Gs ,_becb );_becb =_adb .NewCT_GradientStop ();_becb .PosAttr .ST_PositiveFixedPercentageDecimal =_cf .Int32 (50000);
+_becb .SchemeClr =&_adb .CT_SchemeColor {ValAttr :_adb .ST_SchemeColorValPhClr };_cefc .FillPropertiesChoice .GradFill .GsLst .Gs =append (_cefc .FillPropertiesChoice .GradFill .GsLst .Gs ,_becb );_deg .ThemeElements .FmtScheme .LnStyleLst =_adb .NewCT_LineStyleList ();
+for _gdgb :=0;_gdgb < 3;_gdgb ++{_dae :=_adb .NewCT_LineProperties ();_dae .WAttr =_cf .Int32 (int32 (6350*(_gdgb +1)));_dae .CapAttr =_adb .ST_LineCapFlat ;_dae .CmpdAttr =_adb .ST_CompoundLineSng ;_dae .AlgnAttr =_adb .ST_PenAlignmentCtr ;_deg .ThemeElements .FmtScheme .LnStyleLst .Ln =append (_deg .ThemeElements .FmtScheme .LnStyleLst .Ln ,_dae );
+};_deg .ThemeElements .FmtScheme .EffectStyleLst =_adb .NewCT_EffectStyleList ();for _eeg :=0;_eeg < 3;_eeg ++{_bdf :=_adb .NewCT_EffectStyleItem ();_bdf .EffectPropertiesChoice .EffectLst =_adb .NewCT_EffectList ();_deg .ThemeElements .FmtScheme .EffectStyleLst .EffectStyle =append (_deg .ThemeElements .FmtScheme .EffectStyleLst .EffectStyle ,_bdf );
+};_cdcb :=_adb .NewEG_FillProperties ();_cdcb .FillPropertiesChoice .SolidFill =&_adb .CT_SolidColorFillProperties {SchemeClr :&_adb .CT_SchemeColor {ValAttr :_adb .ST_SchemeColorValPhClr }};_deg .ThemeElements .FmtScheme .BgFillStyleLst .EG_FillProperties =append (_deg .ThemeElements .FmtScheme .BgFillStyleLst .EG_FillProperties ,_cdcb );
+_deg .ThemeElements .FmtScheme .BgFillStyleLst .EG_FillProperties =append (_deg .ThemeElements .FmtScheme .BgFillStyleLst .EG_FillProperties ,_cdcb );_deg .ThemeElements .FmtScheme .BgFillStyleLst .EG_FillProperties =append (_deg .ThemeElements .FmtScheme .BgFillStyleLst .EG_FillProperties ,_cefc );
+_beg ._cbd =append (_beg ._cbd ,_deg );_eab :=_cf .AbsoluteFilename (_cf .DocTypePresentation ,_cf .ThemeType ,1);_beg .ContentTypes .AddOverride (_eab ,_cf .ThemeContentType );_beg ._cbc .AddAutoRelationship (_cf .DocTypePresentation ,_cf .OfficeDocumentType ,1,_cf .ThemeType );
+_eec :=_ad .NewRelationships ();_beg ._eca =append (_beg ._eca ,_eec );_beg ._facg =append (_beg ._facg ,len (_beg ._cbd ));return _beg ;};
+
+// NewSlideScreenSize returns slide screen size with default MS PowerPoint slide screen size 16x9.
+func NewSlideScreenSize ()SlideScreenSize {return NewSlideScreenSizeWithValue (SlideScreenSize16x9 [0],SlideScreenSize16x9 [1]);};var _ffe =false ;
+
+// GetColorBySchemeColor returns *dml.CT_Color mapped to scheme colors like dk1, lt1 etc. depending on what theme is used in the presentation.
+func (_feb *Slide )GetColorBySchemeColor (schClr _adb .ST_SchemeColorVal )*_adb .CT_Color {_feb .ensureClrMap ();_cfda :=_feb ._ggfa ;if _cfda ==nil {return nil ;};var _afed _adb .ST_ColorSchemeIndex ;switch schClr .String (){case "\u0062\u0067\u0031":_afed =_cfda .Bg1Attr ;
+case "\u0062\u0067\u0032":_afed =_cfda .Bg2Attr ;case "\u0074\u0078\u0031":_afed =_cfda .Tx1Attr ;case "\u0074\u0078\u0032":_afed =_cfda .Tx2Attr ;case "\u0061c\u0063\u0065\u006e\u0074\u0031":_afed =_cfda .Accent1Attr ;case "\u0061c\u0063\u0065\u006e\u0074\u0032":_afed =_cfda .Accent2Attr ;
+case "\u0061c\u0063\u0065\u006e\u0074\u0033":_afed =_cfda .Accent3Attr ;case "\u0061c\u0063\u0065\u006e\u0074\u0034":_afed =_cfda .Accent4Attr ;case "\u0061c\u0063\u0065\u006e\u0074\u0035":_afed =_cfda .Accent5Attr ;case "\u0061c\u0063\u0065\u006e\u0074\u0036":_afed =_cfda .Accent6Attr ;
+case "\u0068\u006c\u0069n\u006b":_afed =_cfda .HlinkAttr ;case "\u0066\u006f\u006c\u0048\u006c\u0069\u006e\u006b":_afed =_cfda .FolHlinkAttr ;case "\u0064\u006b\u0031":_afed =_adb .ST_ColorSchemeIndexDk1 ;case "\u0064\u006b\u0032":_afed =_adb .ST_ColorSchemeIndexDk2 ;
+case "\u006c\u0074\u0031":_afed =_adb .ST_ColorSchemeIndexLt1 ;case "\u006c\u0074\u0032":_afed =_adb .ST_ColorSchemeIndexLt2 ;default:_afed =_adb .ST_ColorSchemeIndexUnset ;};_egdf :=_feb ._bbgag ._cbd [0];_fbge :=_egdf .ThemeElements ;if _fbge ==nil {return nil ;
+};var _ffda *_adb .CT_Color ;_ebff :=_fbge .ClrScheme ;switch _afed .String (){case "\u0064\u006b\u0031":_ffda =_ebff .Dk1 ;case "\u0064\u006b\u0032":_ffda =_ebff .Dk2 ;case "\u006c\u0074\u0031":_ffda =_ebff .Lt1 ;case "\u006c\u0074\u0032":_ffda =_ebff .Lt2 ;
+case "\u0061c\u0063\u0065\u006e\u0074\u0031":_ffda =_ebff .Accent1 ;case "\u0061c\u0063\u0065\u006e\u0074\u0032":_ffda =_ebff .Accent2 ;case "\u0061c\u0063\u0065\u006e\u0074\u0033":_ffda =_ebff .Accent3 ;case "\u0061c\u0063\u0065\u006e\u0074\u0034":_ffda =_ebff .Accent4 ;
+case "\u0061c\u0063\u0065\u006e\u0074\u0035":_ffda =_ebff .Accent5 ;case "\u0061c\u0063\u0065\u006e\u0074\u0036":_ffda =_ebff .Accent6 ;case "\u0068\u006c\u0069n\u006b":_ffda =_ebff .Hlink ;case "\u0066\u006f\u006c\u0048\u006c\u0069\u006e\u006b":_ffda =_ebff .FolHlink ;
+default:return nil ;};return _ffda ;};
+
+// Type returns the placeholder type
+func (_ee PlaceHolder )Type ()_de .ST_PlaceholderType {return _ee ._abf .NvSpPr .NvPr .Ph .TypeAttr };
+
+// SlideLayouts returns the slide layouts defined in the presentation.
+func (_cggb *Presentation )SlideLayouts ()[]SlideLayout {_aeg :=[]SlideLayout {};for _ ,_ggd :=range _cggb ._bca {if _ggd ==nil {continue ;};if _ggd .CSld .NameAttr ==nil {continue ;};_aeg =append (_aeg ,SlideLayout {_ggd });};return _aeg ;};
+
+// Image is an image within a slide.
+type Image struct{_fde *_de .CT_Picture };
+
+// GetTextBoxes returns a list of all text boxes from a slide.
+func (_feef Slide )GetTextBoxes ()[]*TextBox {_abd :=[]*TextBox {};_baeb :=_feef ._deeg .CSld .SpTree .GroupShapeChoice ;for _ ,_fdbf :=range _baeb {if _fdbf .Sp !=nil &&_fdbf .Sp .NvSpPr .CNvSpPr .TxBoxAttr !=nil &&*_fdbf .Sp .NvSpPr .CNvSpPr .TxBoxAttr {_abd =append (_abd ,&TextBox {_fdbf .Sp });
+};};return _abd ;};
+
+// Charts return the array of presentation charts.
+func (_fdge *Presentation )Charts ()[]_d .ChartSpace {_ecdg :=make ([]_d .ChartSpace ,0);for _ ,_abb :=range _fdge ._gdd {_ecdg =append (_ecdg ,*_abb .X ());};return _ecdg ;};
+
+// NormalViewPr returns the NormalViewPr property.
+func (_acg ViewProperties )NormalViewPr ()*_de .CT_NormalViewProperties {return _acg ._bcb .NormalViewPr };
+
+// TextItem is used for keeping text with references to a paragraph and run, a shape or a table, a row and a cell where it is located.
+type TextItem struct{Text string ;Presentation *Presentation ;Shape *_de .CT_Shape ;GraphicFrame *_de .CT_GraphicalObjectFrame ;Paragraph *_adb .CT_TextParagraph ;Run *_adb .CT_RegularTextRun ;TableInfo *TableInfo ;_bc []rectangle ;_bgfb int ;_fcg int ;
+};
+
+// PlaceHolder is a place holder from a slide.
+type PlaceHolder struct{_abf *_de .CT_Shape ;_fbd *_de .Sld ;};
+
+// SlideLayout is a layout from which slides can be created.
+type SlideLayout struct{_gcee *_de .SldLayout };
+
+// AddDefaultSlideWithLayout tries to replicate what PowerPoint does when
+// inserting a slide with a new style by clearing placeholder content and removing
+// some placeholders.  Use AddSlideWithLayout if you need more control.
+func (_fag *Presentation )AddDefaultSlideWithLayout (l SlideLayout )(Slide ,error ){_age ,_efce :=_fag .AddSlideWithLayout (l );for _ ,_dfg :=range _age .PlaceHolders (){_dfg .Clear ();switch _dfg .Type (){case _de .ST_PlaceholderTypeFtr ,_de .ST_PlaceholderTypeDt ,_de .ST_PlaceholderTypeSldNum :if _ebc :=_dfg .Remove ();
+_ebc !=nil {return Slide {},_ebc ;};};};return _age ,_efce ;};
 
 // SetText sets the text of a placeholder for the initial paragraph. This is a
 // shortcut method that is useful for things like titles which only contain a
 // single paragraph.
-func (_bfbc PlaceHolder )SetText (text string ){_bfbc .Clear ();_bac :=_ee .NewEG_TextRun ();_bac .TextRunChoice .R =_ee .NewCT_RegularTextRun ();_bac .TextRunChoice .R .T =text ;if len (_bfbc ._daa .TxBody .P )==0{_bfbc ._daa .TxBody .P =append (_bfbc ._daa .TxBody .P ,_ee .NewCT_TextParagraph ());
-};_bfbc ._daa .TxBody .P [0].EG_TextRun =nil ;_bfbc ._daa .TxBody .P [0].EG_TextRun =append (_bfbc ._daa .TxBody .P [0].EG_TextRun ,_bac );};type rectangle struct{_cg int64 ;_bea int64 ;_de int64 ;_eea int64 ;};
-
-// Text returns text from a slide as one string separated with line breaks.
-func (_fcg *SlideText )Text ()string {_afb :=_df .NewBuffer ([]byte {});for _ ,_bgg :=range _fcg .Items {if _bgg .Text !=""{_afb .WriteString (_bgg .Text );_afb .WriteString ("\u000a");};};return _afb .String ();};
-
-// AddSlideWithLayout adds a new slide with content copied from a layout.  Normally you should
-// use AddDefaultSlideWithLayout as it will do some post processing similar to PowerPoint to
-// clear place holder text, etc.
-func (_faa *Presentation )AddSlideWithLayout (l SlideLayout )(Slide ,error ){_fcgg :=_cf .NewCT_SlideIdListEntry ();_fcgg .IdAttr =_faa .nextSlideID ();_faa ._dgf .SldIdLst .SldId =append (_faa ._dgf .SldIdLst .SldId ,_fcgg );_adc :=_cf .NewSld ();_cbdg :=_df .Buffer {};
-_fac :=_gbc .NewEncoder (&_cbdg );_ebe :=_gbc .StartElement {Name :_gbc .Name {Local :"\u0073\u006c\u0069d\u0065"}};_ebe .Attr =append (_ebe .Attr ,_gbc .Attr {Name :_gbc .Name {Local :"\u0078\u006d\u006cn\u0073"},Value :"\u0068\u0074\u0074\u0070\u003a\u002f\u002f\u0073\u0063\u0068\u0065\u006d\u0061\u0073\u002e\u006f\u0070\u0065\u006e\u0078m\u006c\u0066\u006f\u0072\u006d\u0061\u0074\u0073\u002eo\u0072\u0067\u002f\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061\u0074\u0069o\u006e\u006d\u006c\u002f\u0032\u00300\u0036\u002f\u006da\u0069\u006e"});
-_ebe .Attr =append (_ebe .Attr ,_gbc .Attr {Name :_gbc .Name {Local :"\u0078m\u006c\u006e\u0073\u003a\u0061"},Value :"\u0068\u0074\u0074\u0070\u003a\u002f\u002f\u0073\u0063\u0068\u0065m\u0061\u0073\u002e\u006f\u0070\u0065\u006e\u0078m\u006cf\u006f\u0072\u006d\u0061\u0074\u0073\u002e\u006f\u0072\u0067\u002f\u0064\u0072\u0061\u0077\u0069\u006e\u0067m\u006c\u002f\u0032\u0030\u0030\u0036\u002f\u006d\u0061\u0069\u006e"});
-_ebe .Attr =append (_ebe .Attr ,_gbc .Attr {Name :_gbc .Name {Local :"\u0078m\u006c\u006e\u0073\u003a\u0070"},Value :"\u0068\u0074\u0074\u0070\u003a\u002f\u002f\u0073\u0063\u0068\u0065\u006d\u0061\u0073\u002e\u006f\u0070\u0065\u006e\u0078m\u006c\u0066\u006f\u0072\u006d\u0061\u0074\u0073\u002eo\u0072\u0067\u002f\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061\u0074\u0069o\u006e\u006d\u006c\u002f\u0032\u00300\u0036\u002f\u006da\u0069\u006e"});
-_ebe .Attr =append (_ebe .Attr ,_gbc .Attr {Name :_gbc .Name {Local :"\u0078m\u006c\u006e\u0073\u003a\u0072"},Value :"\u0068\u0074\u0074\u0070\u003a\u002f/\u0073\u0063\u0068\u0065\u006da\u0073\u002e\u006f\u0070\u0065\u006ex\u006d\u006c\u0066\u006f\u0072m\u0061\u0074\u0073\u002e\u006f\u0072\u0067\u002f\u006f\u0066\u0066\u0069c\u0065\u0044\u006f\u0063\u0075\u006d\u0065\u006e\u0074\u002f\u0032\u0030\u0030\u0036\u002fr\u0065\u006c\u0061\u0074\u0069\u006f\u006e\u0073h\u0069\u0070\u0073"});
-_ebe .Attr =append (_ebe .Attr ,_gbc .Attr {Name :_gbc .Name {Local :"\u0078\u006d\u006c\u006e\u0073\u003a\u0073\u0068"},Value :"\u0068\u0074\u0074\u0070\u003a/\u002f\u0073\u0063\u0068\u0065m\u0061s\u002e\u006f\u0070\u0065\u006e\u0078\u006d\u006c\u0066\u006f\u0072\u006d\u0061\u0074\u0073\u002e\u006f\u0072\u0067/\u006f\u0066\u0066\u0069\u0063\u0065\u0044\u006f\u0063\u0075\u006d\u0065\u006e\u0074\u002f\u0032\u0030\u0030\u0036\u002f\u0073\u0068\u0061\u0072e\u0064\u0054\u0079\u0070\u0065\u0073"});
-_ebe .Attr =append (_ebe .Attr ,_gbc .Attr {Name :_gbc .Name {Local :"\u0078m\u006c\u006e\u0073\u003a\u0078\u006dl"},Value :"\u0068\u0074tp\u003a\u002f\u002fw\u0077\u0077\u002e\u00773.o\u0072g/\u0058\u004d\u004c\u002f\u0031\u0039\u00398/\u006e\u0061\u006d\u0065\u0073\u0070\u0061c\u0065"});
-if _ddee :=l ._cdef .CSld .MarshalXML (_fac ,_ebe );_ddee !=nil {return Slide {},_ddee ;};if _fdg :=_fac .Flush ();_fdg !=nil {return Slide {},_fdg ;};_dge :=_gbc .NewDecoder (&_cbdg );_adc .CSld =_cf .NewCT_CommonSlideData ();if _cgf :=_dge .Decode (_adc .CSld );
-_cgf !=nil {return Slide {},_cgf ;};_adc .CSld .NameAttr =nil ;_adc .CSld .SpTree .GroupShapeChoice =_fbc (_adc .CSld .SpTree .GroupShapeChoice );_aea :=make ([]*_cf .CT_GroupShapeChoice ,0);for _ ,_bbc :=range _adc .CSld .SpTree .GroupShapeChoice {if _ged :=_bbc .Sp ;
-_ged !=nil {if _dgd :=_ged .NvSpPr ;_dgd !=nil {if _ace :=_dgd .NvPr ;_ace !=nil {if _fce :=_ace .Ph ;_fce !=nil {_aea =append (_aea ,_bbc );};};};};};_adc .CSld .SpTree .GroupShapeChoice =_aea ;_faa ._fde =append (_faa ._fde ,_adc );_faa ._ff =append (_faa ._ff ,len (_faa ._fde ));
-_cea :=_faa ._cbb .AddAutoRelationship (_gd .DocTypePresentation ,_gd .OfficeDocumentType ,len (_faa ._fde ),_gd .SlideType );_fcgg .RIdAttr =_cea .ID ();_eegg :=_gd .AbsoluteFilename (_gd .DocTypePresentation ,_gd .SlideType ,len (_faa ._fde ));_faa .ContentTypes .AddOverride (_eegg ,_gd .SlideContentType );
-_bebd :=_ge .NewRelationships ();_faa ._bafb =append (_faa ._bafb ,_bebd );_fbaa :=len (_faa ._bafb )-1;for _gad ,_dfe :=range _faa ._cbag {if _dfe ==l .X (){_fdgc :=_faa ._gbd [_gad ];for _ ,_abdb :=range _fdgc .X ().Relationship {if _abdb .TypeAttr !=_gd .SlideMasterType {_faa ._bafb [_fbaa ].X ().Relationship =append (_faa ._bafb [_fbaa ].X ().Relationship ,_abdb );
-};};_bebd .AddAutoRelationship (_gd .DocTypePresentation ,_gd .SlideType ,_gad +1,_gd .SlideLayoutType );};};_cgfa :=Slide {_fcgg ,_adc ,_faa ,nil };return _cgfa ,nil ;};
-
-// Image is an image within a slide.
-type Image struct{_beg *_cf .CT_Picture };
+func (_afb PlaceHolder )SetText (text string ){_afb .Clear ();_gdc :=_adb .NewEG_TextRun ();_gdc .TextRunChoice .R =_adb .NewCT_RegularTextRun ();_gdc .TextRunChoice .R .T =text ;if len (_afb ._abf .TxBody .P )==0{_afb ._abf .TxBody .P =append (_afb ._abf .TxBody .P ,_adb .NewCT_TextParagraph ());
+};_afb ._abf .TxBody .P [0].EG_TextRun =nil ;_afb ._abf .TxBody .P [0].EG_TextRun =append (_afb ._abf .TxBody .P [0].EG_TextRun ,_gdc );};
 
 // Open opens and reads a document from a file (.pptx).
-func Open (filename string )(*Presentation ,error ){_ag ,_afe :=_cd .Open (filename );if _afe !=nil {return nil ,_ed .Errorf ("e\u0072r\u006f\u0072\u0020\u006f\u0070\u0065\u006e\u0069n\u0067\u0020\u0025\u0073: \u0025\u0073",filename ,_afe );};defer _ag .Close ();
-_fef ,_afe :=_cd .Stat (filename );if _afe !=nil {return nil ,_ed .Errorf ("e\u0072r\u006f\u0072\u0020\u006f\u0070\u0065\u006e\u0069n\u0067\u0020\u0025\u0073: \u0025\u0073",filename ,_afe );};_ =_fef ;return Read (_ag ,_fef .Size ());};
+func Open (filename string )(*Presentation ,error ){_ddb ,_fdgd :=_ga .Open (filename );if _fdgd !=nil {return nil ,_ab .Errorf ("e\u0072r\u006f\u0072\u0020\u006f\u0070\u0065\u006e\u0069n\u0067\u0020\u0025\u0073: \u0025\u0073",filename ,_fdgd );};defer _ddb .Close ();
+_affc ,_fdgd :=_ga .Stat (filename );if _fdgd !=nil {return nil ,_ab .Errorf ("e\u0072r\u006f\u0072\u0020\u006f\u0070\u0065\u006e\u0069n\u0067\u0020\u0025\u0073: \u0025\u0073",filename ,_fdgd );};_ =_affc ;return Read (_ddb ,_affc .Size ());};type chart struct{_dd *_d .ChartSpace ;
+_fbc string ;_gdb string ;};type rectangle struct{_ed int64 ;_dcb int64 ;_fe int64 ;_fbcf int64 ;};
 
-// LastViewAttr returns the LastViewAttr property.
-func (_gaeb ViewProperties )LastViewAttr ()_cf .ST_ViewType {return _gaeb ._dddf .LastViewAttr };func _fbc (_fggg []*_cf .CT_GroupShapeChoice )[]*_cf .CT_GroupShapeChoice {var _afc []*_cf .CT_GroupShapeChoice ;for _ ,_fedc :=range _fggg {if _fedc .Pic ==nil {_afc =append (_afc ,_fedc );
-};};return _afc ;};
+// SlideViewPr returns the SlideViewPr property.
+func (_ddca ViewProperties )SlideViewPr ()*_de .CT_SlideViewProperties {return _ddca ._bcb .SlideViewPr };
 
-// Clear clears the placeholder contents and adds a single empty paragraph.  The
-// empty paragrah is required by PowerPoint or it will report the file as being
-// invalid.
-func (_caa PlaceHolder )Clear (){_caa .ClearAll ();_bdg :=_ee .NewCT_TextParagraph ();_caa ._daa .TxBody .P =[]*_ee .CT_TextParagraph {_bdg };_bdg .EndParaRPr =_ee .NewCT_TextCharacterProperties ();_bdg .EndParaRPr .LangAttr =_gd .String ("\u0065\u006e\u002dU\u0053");
-};func (_db *chart )X ()*_g .ChartSpace {return _db ._ad };
+// SetTextAnchor controls the text anchoring
+func (_gdfe TextBox )SetTextAnchor (a _adb .ST_TextAnchoringType ){_gdfe ._bbfd .TxBody .BodyPr =_adb .NewCT_TextBodyProperties ();_gdfe ._bbfd .TxBody .BodyPr .AnchorAttr =a ;};
 
-// AddTextBox adds an empty textbox to a slide.
-func (_fffc Slide )AddTextBox ()TextBox {_fcac :=_cf .NewCT_GroupShapeChoice ();_fffc ._gddb .CSld .SpTree .GroupShapeChoice =append (_fffc ._gddb .CSld .SpTree .GroupShapeChoice ,_fcac );_bafc :=_cf .NewCT_Shape ();_fcac .Sp =_bafc ;_bafc .SpPr =_ee .NewCT_ShapeProperties ();
-_bafc .SpPr .Xfrm =_ee .NewCT_Transform2D ();_bafc .SpPr .GeometryChoice .PrstGeom =_ee .NewCT_PresetGeometry2D ();_bafc .SpPr .GeometryChoice .PrstGeom .PrstAttr =_ee .ST_ShapeTypeRect ;_bafc .NvSpPr =_cf .NewCT_ShapeNonVisual ();_bafc .NvSpPr .CNvSpPr =_ee .NewCT_NonVisualDrawingShapeProps ();
-_gecc :=true ;_bafc .NvSpPr .CNvSpPr .TxBoxAttr =&_gecc ;_bafc .TxBody =_ee .NewCT_TextBody ();_bafc .TxBody .BodyPr =_ee .NewCT_TextBodyProperties ();_bafc .TxBody .BodyPr .WrapAttr =_ee .ST_TextWrappingTypeSquare ;_bafc .TxBody .BodyPr .TextAutofitChoice .SpAutoFit =_ee .NewCT_TextShapeAutofit ();
-_bfbb :=TextBox {_bafc };_bfbb .Properties ().SetWidth (3*_f .Inch );_bfbb .Properties ().SetHeight (1*_f .Inch );_bfbb .Properties ().SetPosition (0,0);return _bfbb ;};
+// Size returns slide size value as SlideScreenSize.
+func (_gde *SlideSize )Size ()SlideScreenSize {return SlideScreenSize {_gde ._bdb .CxAttr ,_gde ._bdb .CyAttr };};
 
-// X returns the inner wrapped XML type.
-func (_edea SlideMaster )X ()*_cf .SldMaster {return _edea ._bdga };
+// Themes returns an array of presentation themes.
+func (_afad *Presentation )Themes ()[]*_adb .Theme {return _afad ._cbd };
 
 // TextBox is a text box within a slide.
-type TextBox struct{_bcfg *_cf .CT_Shape };
+type TextBox struct{_bbfd *_de .CT_Shape };
 
-// SetSize sets the slide size, take argument of SlideScreenSize.
-func (_dded *SlideSize )SetSize (sz SlideScreenSize ){_dded ._dba .CxAttr =sz [0];_dded ._dba .CyAttr =sz [1];};
+// GetLayoutImageByRelID returns an ImageRef with the associated relation ID in the
+// slide layout.
+func (_cbdc *Slide )GetLayoutImageByRelID (relID string )(_ad .ImageRef ,bool ){_ggde :=_cbdc .getSlideLayoutRels ();if (_ggde ==_ad .Relationships {}){return _ad .ImageRef {},false ;};_agce :=_ggde .GetTargetByRelId (relID );for _ ,_gaga :=range _cbdc ._bbgag .Images {if _gaga .Target ()==_agce {return _gaga ,true ;
+};};return _ad .ImageRef {},false ;};
 
-// MoveSlide moves a slide with given number to position targetPos within a presentation.
-func (_dcbf *Presentation )MoveSlide (slideNumber ,targetPos int )error {if slideNumber < 0||slideNumber >=len (_dcbf ._fde ){return _ggc .New ("\u0073\u006c\u0069\u0064eN\u0075\u006d\u0062\u0065\u0072\u0020\u0069\u0073\u0020\u0069\u006e\u0076\u0061\u006ci\u0064");
-};if targetPos < 0||targetPos >=len (_dcbf ._fde ){return _ggc .New ("t\u0061r\u0067\u0065\u0074\u0050\u006f\u0073\u0020\u0069s\u0020\u0069\u006e\u0076al\u0069\u0064");};if slideNumber ==targetPos {return nil ;};_fbef :=_dcbf ._fde [slideNumber ];_cbef :=_dcbf ._bafb [slideNumber ];
-if slideNumber < targetPos {copy (_dcbf ._fde [slideNumber :targetPos ],_dcbf ._fde [slideNumber +1:targetPos +1]);copy (_dcbf ._bafb [slideNumber :targetPos ],_dcbf ._bafb [slideNumber +1:targetPos +1]);}else {copy (_dcbf ._fde [targetPos +1:slideNumber +1],_dcbf ._fde [targetPos :slideNumber ]);
-copy (_dcbf ._bafb [targetPos +1:slideNumber +1],_dcbf ._bafb [targetPos :slideNumber ]);};_dcbf ._fde [targetPos ]=_fbef ;_dcbf ._bafb [targetPos ]=_cbef ;return nil ;};
+// AddParagraph adds a new paragraph to a placeholder.
+func (_afba PlaceHolder )AddParagraph ()_cg .Paragraph {_eff :=_cg .MakeParagraph (_adb .NewCT_TextParagraph ());_afba ._abf .TxBody .P =append (_afba ._abf .TxBody .P ,_eff .X ());return _eff ;};
 
-// SorterViewPr returns the SorterViewPr property.
-func (_bga ViewProperties )SorterViewPr ()*_cf .CT_SlideSorterViewProperties {return _bga ._dddf .SorterViewPr ;};
-
-// Charts return the array of presentation charts.
-func (_ddfa *Presentation )Charts ()[]_g .ChartSpace {_feg :=make ([]_g .ChartSpace ,0);for _ ,_aded :=range _ddfa ._gcd {_feg =append (_feg ,*_aded .X ());};return _feg ;};
-
-// CopySlide copies existing slide from another presentation and inserts it as a last one.
-func (_ffc *Presentation )CopySlide (s Slide )(Slide ,error ){_eggf :=_cf .NewCT_SlideIdListEntry ();_eggf .IdAttr =_ffc .nextSlideID ();_ffc ._dgf .SldIdLst .SldId =append (_ffc ._dgf .SldIdLst .SldId ,_eggf );_aca :=s .GetSlideLayout ();_fcb :=true ;
-for _ ,_agb :=range _ffc ._cbag {if _agb ==_aca {_fcb =false ;break ;};};if _fcb {if _gac :=_ffc .addLayoutFromSlide (s );_gac !=nil {return Slide {},_gac ;};};_ffc ._fde =append (_ffc ._fde ,s ._gddb );_ffc ._ff =append (_ffc ._ff ,len (_ffc ._fde ));
-_dbef :=_ffc ._cbb .AddAutoRelationship (_gd .DocTypePresentation ,_gd .OfficeDocumentType ,len (_ffc ._fde ),_gd .SlideType );_eggf .RIdAttr =_dbef .ID ();_eff :=_gd .AbsoluteFilename (_gd .DocTypePresentation ,_gd .SlideType ,len (_ffc ._fde ));_ffc .ContentTypes .AddOverride (_eff ,_gd .SlideContentType );
-_bfc :=_ge .NewRelationships ();_ffc ._bafb =append (_ffc ._bafb ,_bfc );_bdae :=len (_ffc ._bafb )-1;for _eae ,_egdgf :=range _ffc ._cbag {if _egdgf ==_aca {_bgdg :=_ffc ._gbd [_eae ];for _ ,_fge :=range _bgdg .X ().Relationship {if _fge .TypeAttr !=_gd .SlideMasterType {_ffc ._bafb [_bdae ].X ().Relationship =append (_ffc ._bafb [_bdae ].X ().Relationship ,_fge );
-};};_bfc .AddAutoRelationship (_gd .DocTypePresentation ,_gd .SlideType ,_eae +1,_gd .SlideLayoutType );};};_adb :=Slide {_eggf ,s ._gddb ,_ffc ,nil };return _adb ,nil ;};
-
-// GetImageByRelID returns an ImageRef with the associated relation ID in the
-// slide.
-func (_eef *Slide )GetImageByRelID (relID string )(_ge .ImageRef ,bool ){_bcgf :=_eef .getSlideRels ();if (_bcgf ==_ge .Relationships {}){return _ge .ImageRef {},false ;};_afga :=_bcgf .GetTargetByRelId (relID );for _ ,_cfdd :=range _eef ._cbab .Images {if _cfdd .Target ()==_afga {return _cfdd ,true ;
-};};return _ge .ImageRef {},false ;};func _bagc (_cgg *Presentation ,_ccc *_cf .CT_Shape ,_cae *_cf .CT_GraphicalObjectFrame ,_egb *TableInfo ,_egd *_ee .CT_Transform2D ,_fg int ,_egdg []rectangle ,_bfb []*_ee .CT_TextParagraph )[]*TextItem {_edf :=[]*TextItem {};
-var _ccd ,_adg ,_dbe ,_fda ,_ga ,_gf int64 ;_bbgb :=_egd ==nil ;_cfa :=0;for _ ,_dfc :=range _bfb {for _ ,_ggf :=range _dfc .EG_TextRun {if _eba :=_ggf .TextRunChoice .R ;_eba !=nil {if !_bbgb {if _egd .Off !=nil {if _dd :=_egd .Ext ;_dd !=nil {_ga ,_gf =_dd .CxAttr ,_dd .CyAttr ;
-};if _cbc :=_egd .Off .XAttr .ST_CoordinateUnqualified ;_cbc !=nil {_ccd =*_cbc ;_adg =_ccd +_ga ;_bbgb =true ;};if _dc :=_egd .Off .YAttr .ST_CoordinateUnqualified ;_dc !=nil {_dbe =*_dc ;_fda =_dbe +_gf ;_bbgb =true ;};};};_aeee :=append ([]rectangle {},_egdg ...);
-_aeee =append (_aeee ,rectangle {_cg :_ccd ,_de :_adg ,_bea :_dbe ,_eea :_fda });_edf =append (_edf ,&TextItem {Presentation :_cgg ,Shape :_ccc ,GraphicFrame :_cae ,TableInfo :_egb ,Paragraph :_dfc ,Run :_eba ,Text :_eba .T ,_aee :_aeee ,_gc :_fg ,_cb :_cfa });
-_cfa ++;};};};return _edf ;};
-
-// Presentation returns a slide's presentation.
-func (_bgb Slide )Presentation ()*Presentation {return _bgb ._cbab };
-
-// GetTextBoxes returns a list of all text boxes from a slide.
-func (_fdcf Slide )GetTextBoxes ()[]*TextBox {_egf :=[]*TextBox {};_gefb :=_fdcf ._gddb .CSld .SpTree .GroupShapeChoice ;for _ ,_effb :=range _gefb {if _effb .Sp !=nil &&_effb .Sp .NvSpPr .CNvSpPr .TxBoxAttr !=nil &&*_effb .Sp .NvSpPr .CNvSpPr .TxBoxAttr {_egf =append (_egf ,&TextBox {_effb .Sp });
-};};return _egf ;};
-
-// TextItem is used for keeping text with references to a paragraph and run, a shape or a table, a row and a cell where it is located.
-type TextItem struct{Text string ;Presentation *Presentation ;Shape *_cf .CT_Shape ;GraphicFrame *_cf .CT_GraphicalObjectFrame ;Paragraph *_ee .CT_TextParagraph ;Run *_ee .CT_RegularTextRun ;TableInfo *TableInfo ;_aee []rectangle ;_gc int ;_cb int ;};
-
-// Index returns the placeholder index
-func (_bgf PlaceHolder )Index ()uint32 {if _bgf ._daa .NvSpPr .NvPr .Ph .IdxAttr ==nil {return 0;};return *_bgf ._daa .NvSpPr .NvPr .Ph .IdxAttr ;};
-
-// X returns the inner wrapped XML type.
-func (_gfae Slide )X ()*_cf .Sld {return _gfae ._gddb };func (_fgb *Slide )getSlideLayoutRels ()_ge .Relationships {_aegf :=_fgb ._cbab ;for _bdfd ,_cgbb :=range _aegf .SlideLayouts (){if *_fgb .GetSlideLayout ().CSld ==*_cgbb ._cdef .CSld {return _aegf ._gbd [_bdfd ];
-};};return _ge .Relationships {};};
-
-// AddSlide adds a new slide to the presentation.
-func (_bad *Presentation )AddSlide ()Slide {_fag :=_cf .NewCT_SlideIdListEntry ();_fag .IdAttr =_bad .nextSlideID ();_bad ._dgf .SldIdLst .SldId =append (_bad ._dgf .SldIdLst .SldId ,_fag );_dcb :=_cf .NewSld ();_dcb .CSld .SpTree .NvGrpSpPr .CNvPr .IdAttr =1;
-_dcb .CSld .SpTree .GrpSpPr .Xfrm =_ee .NewCT_GroupTransform2D ();_dcb .CSld .SpTree .GrpSpPr .Xfrm .Off =_ee .NewCT_Point2D ();_dcb .CSld .SpTree .GrpSpPr .Xfrm .Off .XAttr .ST_CoordinateUnqualified =_gd .Int64 (0);_dcb .CSld .SpTree .GrpSpPr .Xfrm .Off .YAttr .ST_CoordinateUnqualified =_gd .Int64 (0);
-_dcb .CSld .SpTree .GrpSpPr .Xfrm .Ext =_ee .NewCT_PositiveSize2D ();_dcb .CSld .SpTree .GrpSpPr .Xfrm .Ext .CxAttr =int64 (0*_f .Point );_dcb .CSld .SpTree .GrpSpPr .Xfrm .Ext .CyAttr =int64 (0*_f .Point );_dcb .CSld .SpTree .GrpSpPr .Xfrm .ChOff =_dcb .CSld .SpTree .GrpSpPr .Xfrm .Off ;
-_dcb .CSld .SpTree .GrpSpPr .Xfrm .ChExt =_dcb .CSld .SpTree .GrpSpPr .Xfrm .Ext ;_bad ._fde =append (_bad ._fde ,_dcb );_bad ._ff =append (_bad ._ff ,len (_bad ._fde ));_ggcd :=_bad ._cbb .AddAutoRelationship (_gd .DocTypePresentation ,_gd .OfficeDocumentType ,len (_bad ._fde ),_gd .SlideType );
-_fag .RIdAttr =_ggcd .ID ();_ddb :=_gd .AbsoluteFilename (_gd .DocTypePresentation ,_gd .SlideType ,len (_bad ._fde ));_bad .ContentTypes .AddOverride (_ddb ,_gd .SlideContentType );_afge :=_ge .NewRelationships ();_bad ._bafb =append (_bad ._bafb ,_afge );
-_afge .AddAutoRelationship (_gd .DocTypePresentation ,_gd .SlideType ,len (_bad ._cbag ),_gd .SlideLayoutType );return Slide {_fag ,_dcb ,_bad ,nil };};func (_fefd *Slide )getSlideRels ()_ge .Relationships {_bgde :=_fefd ._cbab ;for _dfbc ,_cbbe :=range _bgde .Slides (){if *_fefd ._gddb ==*_cbbe ._gddb {return _bgde ._bafb [_dfbc ];
-};};return _ge .Relationships {};};
-
-// SlideLayout is a layout from which slides can be created.
-type SlideLayout struct{_cdef *_cf .SldLayout };
-
-// Read reads a document from an io.Reader.
-func Read (r _ccf .ReaderAt ,size int64 )(*Presentation ,error ){const _cfba ="\u0070\u0072\u0065\u0073\u0065\u006e\u0074\u0061\u0074\u0069\u006f\u006e:\u0052\u0065\u0061\u0064";if !_e .GetLicenseKey ().IsLicensed ()&&!_geg {_ed .Println ("\u0055\u006e\u006ci\u0063\u0065\u006e\u0073e\u0064\u0020\u0076\u0065\u0072\u0073\u0069o\u006e\u0020\u006f\u0066\u0020\u0055\u006e\u0069\u004f\u0066\u0066\u0069\u0063\u0065");
-_ed .Println ("\u002d\u0020\u0047e\u0074\u0020\u0061\u0020\u0074\u0072\u0069\u0061\u006c\u0020\u006c\u0069\u0063\u0065\u006e\u0073\u0065\u0020\u006f\u006e\u0020\u0068\u0074\u0074\u0070\u0073\u003a\u002f\u002fu\u006e\u0069\u0064\u006f\u0063\u002e\u0069\u006f");
-return nil ,_ggc .New ("\u0075\u006e\u0069\u006f\u0066\u0066\u0069\u0063\u0065\u0020\u006ci\u0063\u0065\u006e\u0073\u0065\u0020\u0072\u0065\u0071\u0075i\u0072\u0065\u0064");};_ffb :="\u0075n\u006b\u006e\u006f\u0077\u006e";if _cced ,_gbdce :=r .(*_cd .File );
-_gbdce {_ffb =_cced .Name ();};_bge :=_ggg ();_fgga ,_cfc :=_e .GenRefId ("\u0070\u0072");if _cfc !=nil {_gg .Log .Error ("\u0045R\u0052\u004f\u0052\u003a\u0020\u0025v",_cfc );return nil ,_cfc ;};_bge ._ecf =_fgga ;if _eabg :=_e .Track (_bge ._ecf ,_cfba ,_ffb );
-_eabg !=nil {_gg .Log .Error ("\u0045R\u0052\u004f\u0052\u003a\u0020\u0025v",_eabg );return nil ,_eabg ;};_bafe ,_cfc :=_cc .TempDir ("\u0075\u006e\u0069\u006f\u0066\u0066\u0069\u0063\u0065-\u0070\u0070\u0074\u0078");if _cfc !=nil {return nil ,_cfc ;};
-_bge .TmpPath =_bafe ;_ecdaf ,_cfc :=_d .NewReader (r ,size );if _cfc !=nil {return nil ,_ed .Errorf ("\u0070a\u0072s\u0069\u006e\u0067\u0020\u007a\u0069\u0070\u003a\u0020\u0025\u0073",_cfc );};_cfgfd :=[]*_d .File {};_cfgfd =append (_cfgfd ,_ecdaf .File ...);
-_bfag :=false ;for _ ,_adeg :=range _cfgfd {if _adeg .FileHeader .Name =="\u0064\u006f\u0063\u0050ro\u0070\u0073\u002f\u0063\u0075\u0073\u0074\u006f\u006d\u002e\u0078\u006d\u006c"{_bfag =true ;break ;};};if _bfag {_bge .CreateCustomProperties ();};_gaee :=_gb .DecodeMap {};
-_gaee .SetOnNewRelationshipFunc (_bge .onNewRelationship );_gaee .AddTarget (_gd .ContentTypesFilename ,_bge .ContentTypes .X (),"",0);_gaee .AddTarget (_gd .BaseRelsFilename ,_bge .Rels .X (),"",0);if _ced :=_gaee .Decode (_cfgfd );_ced !=nil {return nil ,_ced ;
-};for _ ,_dbg :=range _cfgfd {if _dbg ==nil {continue ;};if _ggaa :=_bge .AddExtraFileFromZip (_dbg );_ggaa !=nil {return nil ,_ggaa ;};};if _bfag {_eeeb :=false ;for _ ,_gagc :=range _bge .Rels .X ().Relationship {if _gagc .TargetAttr =="\u0064\u006f\u0063\u0050ro\u0070\u0073\u002f\u0063\u0075\u0073\u0074\u006f\u006d\u002e\u0078\u006d\u006c"{_eeeb =true ;
-break ;};};if !_eeeb {_bge .AddCustomRelationships ();};};return _bge ,nil ;};
-
-// ExtractText returns text from a slide as a SlideText object.
-func (_ggb *Slide )ExtractText ()*SlideText {_cce :=_gdg (_ggb ._cbab ,_ggb ._gddb .CSld .SpTree .GroupShapeChoice ,[]rectangle {},[]*TextItem {});_ca .Sort (sort2d (_cce ));return &SlideText {Items :_cce };};func (_ebf sort2d )Swap (i ,j int ){_ebf [i ],_ebf [j ]=_ebf [j ],_ebf [i ]};
-
-
-// ShowCommentsAttr returns the WebPr property.
-func (_egcd ViewProperties )ShowCommentsAttr ()*bool {return _egcd ._dddf .ShowCommentsAttr };func (_cece *Presentation )saveToFile (_fbea string ,_adfed bool )error {_dbb ,_efe :=_cd .Create (_fbea );if _efe !=nil {return _efe ;};defer func (){_bfa :=_dbb .Close ();
-if _bfa !=nil {_gg .Log .Error ("\u0045R\u0052\u004f\u0052\u003a\u0020\u0025v",_bfa );};}();return _cece .save (_dbb ,_adfed );};
-
-// NotesTextViewPr returns the NotesTextViewPr property.
-func (_dgbf ViewProperties )NotesTextViewPr ()*_cf .CT_NotesTextViewProperties {return _dgbf ._dddf .NotesTextViewPr ;};
+// X returns TextBox's underlying *pml.CT_Shape.
+func (_adca TextBox )X ()*_de .CT_Shape {return _adca ._bbfd };
